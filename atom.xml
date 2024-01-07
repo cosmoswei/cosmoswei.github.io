@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://cosmoswei.github.io</id>
+    <title>cosmoswei go</title>
+    <updated>2024-01-07T15:03:33.636Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://cosmoswei.github.io"/>
+    <link rel="self" href="https://cosmoswei.github.io/atom.xml"/>
+    <subtitle>知行合一</subtitle>
+    <logo>https://cosmoswei.github.io/images/avatar.png</logo>
+    <icon>https://cosmoswei.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2024, cosmoswei go</rights>
+    <entry>
+        <title type="html"><![CDATA[【W02/2024】火焰图（ChatGPT）]]></title>
+        <id>https://cosmoswei.github.io/w022024-huo-yan-tu-chatgpt/</id>
+        <link href="https://cosmoswei.github.io/w022024-huo-yan-tu-chatgpt/">
+        </link>
+        <updated>2024-01-07T14:41:30.000Z</updated>
+        <summary type="html"><![CDATA[<p>如何查看 Java 程序运行时的火焰图，看完这篇博客，相信你会有答案。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>如何查看 Java 程序运行时的火焰图，看完这篇博客，相信你会有答案。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W02/2024】延时双删与双重检测锁模式]]></title>
+        <id>https://cosmoswei.github.io/w22024-yan-shi-shuang-shan-yu-shuang-chong-jian-ce-suo-mo-shi/</id>
+        <link href="https://cosmoswei.github.io/w22024-yan-shi-shuang-shan-yu-shuang-chong-jian-ce-suo-mo-shi/">
+        </link>
+        <updated>2024-01-07T14:32:18.000Z</updated>
+        <summary type="html"><![CDATA[<p>标题的这两个概念相信你都听过，延时双删与双重检测锁模式。然而，由于它们的名称相似，可能导致对它们的概念混淆。现在让我们集中梳理一下这两个概念。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>标题的这两个概念相信你都听过，延时双删与双重检测锁模式。然而，由于它们的名称相似，可能导致对它们的概念混淆。现在让我们集中梳理一下这两个概念。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W01/2024】消息队列的高可用架构]]></title>
+        <id>https://cosmoswei.github.io/xiao-xi-dui-lie-de-gao-ke-yong-jia-gou/</id>
+        <link href="https://cosmoswei.github.io/xiao-xi-dui-lie-de-gao-ke-yong-jia-gou/">
+        </link>
+        <updated>2024-01-01T13:30:23.000Z</updated>
+        <summary type="html"><![CDATA[<p>消息队列是我们在日常业务开发中频繁使用的中间件，我们对它的使用方式、功能特性和基本原理都有一定的了解。但是消息队列服务端身为一个分布式系统，它也就一定满足CAP理论，我们也不得不考虑它运行时的可用性与可靠性，接下来就介绍一下各大主流消息队列中间件在可用性这方面的取舍。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>消息队列是我们在日常业务开发中频繁使用的中间件，我们对它的使用方式、功能特性和基本原理都有一定的了解。但是消息队列服务端身为一个分布式系统，它也就一定满足CAP理论，我们也不得不考虑它运行时的可用性与可靠性，接下来就介绍一下各大主流消息队列中间件在可用性这方面的取舍。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W52/2023】网络通信如何选择？寄信、打电话还是视频通话？]]></title>
+        <id>https://cosmoswei.github.io/wang-luo-tong-xin-ru-he-xuan-ze-ji-xin-da-dian-hua-huan-shi-shi-pin-tong-hua/</id>
+        <link href="https://cosmoswei.github.io/wang-luo-tong-xin-ru-he-xuan-ze-ji-xin-da-dian-hua-huan-shi-shi-pin-tong-hua/">
+        </link>
+        <updated>2023-12-31T09:59:29.000Z</updated>
+        <summary type="html"><![CDATA[<p>在网络通信的世界里，我们经常听说短连接、长轮询、Web Socket 等词汇，它们究竟是什么，又有什么不同呢？就让我们用生活中的比喻，从寄信到视频通话，再到音视频通信，来探索这些概念的奥秘。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在网络通信的世界里，我们经常听说短连接、长轮询、Web Socket 等词汇，它们究竟是什么，又有什么不同呢？就让我们用生活中的比喻，从寄信到视频通话，再到音视频通信，来探索这些概念的奥秘。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W52/2023】存储碎片问题]]></title>
+        <id>https://cosmoswei.github.io/gogogo/</id>
+        <link href="https://cosmoswei.github.io/gogogo/">
+        </link>
+        <updated>2023-12-30T12:02:47.000Z</updated>
+    </entry>
+</feed>
