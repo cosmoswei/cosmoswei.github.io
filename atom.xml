@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://cosmoswei.github.io</id>
+    <title>cosmoswei go</title>
+    <updated>2024-03-16T08:03:51.456Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://cosmoswei.github.io"/>
+    <link rel="self" href="https://cosmoswei.github.io/atom.xml"/>
+    <subtitle>知行合一</subtitle>
+    <logo>https://cosmoswei.github.io/images/avatar.png</logo>
+    <icon>https://cosmoswei.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2024, cosmoswei go</rights>
+    <entry>
+        <title type="html"><![CDATA[【W11/2024】学习资料链接]]></title>
+        <id>https://cosmoswei.github.io/w112024-xue-xi-zi-liao-lian-jie/</id>
+        <link href="https://cosmoswei.github.io/w112024-xue-xi-zi-liao-lian-jie/">
+        </link>
+        <updated>2024-03-16T07:48:32.000Z</updated>
+        <summary type="html"><![CDATA[<p>入行以来收集的学习资料的链接，做了一个简单的汇总。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>入行以来收集的学习资料的链接，做了一个简单的汇总。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W09/2024】Triple 协议调用流程解析]]></title>
+        <id>https://cosmoswei.github.io/w092024-triple-xie-yi-diao-yong-liu-cheng-jie-xi/</id>
+        <link href="https://cosmoswei.github.io/w092024-triple-xie-yi-diao-yong-liu-cheng-jie-xi/">
+        </link>
+        <updated>2024-03-01T15:26:08.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W08/2024】Java 网络编程中的一些概念]]></title>
+        <id>https://cosmoswei.github.io/java-wang-luo-bian-cheng-zhong-de-yi-xie-gai-nian/</id>
+        <link href="https://cosmoswei.github.io/java-wang-luo-bian-cheng-zhong-de-yi-xie-gai-nian/">
+        </link>
+        <updated>2024-02-22T15:39:53.000Z</updated>
+        <summary type="html"><![CDATA[<p>这篇文章简单介绍一些在 Java 网络编程中，经常遇到的一些概念，比如 Socket、Select、Selector 等，避免在具体使用它们的时候，混淆它们的作用。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这篇文章简单介绍一些在 Java 网络编程中，经常遇到的一些概念，比如 Socket、Select、Selector 等，避免在具体使用它们的时候，混淆它们的作用。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W07/2024】Dubbo 调用流程源码简要梳理]]></title>
+        <id>https://cosmoswei.github.io/w72024-dubbo-diao-yong-liu-cheng-shu-li-cao-gao/</id>
+        <link href="https://cosmoswei.github.io/w72024-dubbo-diao-yong-liu-cheng-shu-li-cao-gao/">
+        </link>
+        <updated>2024-02-17T16:20:46.000Z</updated>
+        <summary type="html"><![CDATA[<p>最近在梳理 Dubbo 是怎么跟 Netty 结合在一起，响应来自客户端的网络请求的，针对 Dubbo 3.3 版本的 Triple 协议做了一个简要分析。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>最近在梳理 Dubbo 是怎么跟 Netty 结合在一起，响应来自客户端的网络请求的，针对 Dubbo 3.3 版本的 Triple 协议做了一个简要分析。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W02/2024】NIO 中的 ByteBuffer 梳理]]></title>
+        <id>https://cosmoswei.github.io/w022024-nio-zhong-de-bytebuffer-shu-li/</id>
+        <link href="https://cosmoswei.github.io/w022024-nio-zhong-de-bytebuffer-shu-li/">
+        </link>
+        <updated>2024-01-12T15:34:31.000Z</updated>
+        <summary type="html"><![CDATA[<p>在学习和使用 Netty 框架时，许多资料都会指出 Netty 的 ByteBuf 相较于Java 原生的 ByteBuffer，有不少优化和性能提升，但是一般是片面的指出其中几点，没有对它们之间的差异做全知全貌的解释，这篇博客，就带你完整得认识它们的不同。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在学习和使用 Netty 框架时，许多资料都会指出 Netty 的 ByteBuf 相较于Java 原生的 ByteBuffer，有不少优化和性能提升，但是一般是片面的指出其中几点，没有对它们之间的差异做全知全貌的解释，这篇博客，就带你完整得认识它们的不同。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W02/2024】火焰图（ChatGPT）]]></title>
+        <id>https://cosmoswei.github.io/w022024-huo-yan-tu-chatgpt/</id>
+        <link href="https://cosmoswei.github.io/w022024-huo-yan-tu-chatgpt/">
+        </link>
+        <updated>2024-01-07T14:41:30.000Z</updated>
+        <summary type="html"><![CDATA[<p>如何查看 Java 程序运行时的火焰图，看完这篇博客，相信你会有答案。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>如何查看 Java 程序运行时的火焰图，看完这篇博客，相信你会有答案。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W02/2024】延时双删与双重检测锁模式]]></title>
+        <id>https://cosmoswei.github.io/w22024-yan-shi-shuang-shan-yu-shuang-chong-jian-ce-suo-mo-shi/</id>
+        <link href="https://cosmoswei.github.io/w22024-yan-shi-shuang-shan-yu-shuang-chong-jian-ce-suo-mo-shi/">
+        </link>
+        <updated>2024-01-07T14:32:18.000Z</updated>
+        <summary type="html"><![CDATA[<p>标题的这两个概念相信你都听过，延时双删与双重检测锁模式。然而，由于它们的名称相似，可能导致对它们的概念混淆。现在让我们集中梳理一下这两个概念。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>标题的这两个概念相信你都听过，延时双删与双重检测锁模式。然而，由于它们的名称相似，可能导致对它们的概念混淆。现在让我们集中梳理一下这两个概念。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W01/2024】消息队列的高可用架构]]></title>
+        <id>https://cosmoswei.github.io/xiao-xi-dui-lie-de-gao-ke-yong-jia-gou/</id>
+        <link href="https://cosmoswei.github.io/xiao-xi-dui-lie-de-gao-ke-yong-jia-gou/">
+        </link>
+        <updated>2024-01-01T13:30:23.000Z</updated>
+        <summary type="html"><![CDATA[<p>消息队列是我们在日常业务开发中频繁使用的中间件，我们对它的使用方式、功能特性和基本原理都有一定的了解。但是消息队列服务端身为一个分布式系统，它也就一定满足CAP理论，我们也不得不考虑它运行时的可用性与可靠性，接下来就介绍一下各大主流消息队列中间件在可用性这方面的取舍。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>消息队列是我们在日常业务开发中频繁使用的中间件，我们对它的使用方式、功能特性和基本原理都有一定的了解。但是消息队列服务端身为一个分布式系统，它也就一定满足CAP理论，我们也不得不考虑它运行时的可用性与可靠性，接下来就介绍一下各大主流消息队列中间件在可用性这方面的取舍。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W52/2023】网络通信如何选择？寄信、打电话还是视频通话？]]></title>
+        <id>https://cosmoswei.github.io/wang-luo-tong-xin-ru-he-xuan-ze-ji-xin-da-dian-hua-huan-shi-shi-pin-tong-hua/</id>
+        <link href="https://cosmoswei.github.io/wang-luo-tong-xin-ru-he-xuan-ze-ji-xin-da-dian-hua-huan-shi-shi-pin-tong-hua/">
+        </link>
+        <updated>2023-12-31T09:59:29.000Z</updated>
+        <summary type="html"><![CDATA[<p>在网络通信的世界里，我们经常听说短连接、长轮询、Web Socket 等词汇，它们究竟是什么，又有什么不同呢？就让我们用生活中的比喻，从寄信到视频通话，再到音视频通信，来探索这些概念的奥秘。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在网络通信的世界里，我们经常听说短连接、长轮询、Web Socket 等词汇，它们究竟是什么，又有什么不同呢？就让我们用生活中的比喻，从寄信到视频通话，再到音视频通信，来探索这些概念的奥秘。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W52/2023】存储碎片问题]]></title>
+        <id>https://cosmoswei.github.io/gogogo/</id>
+        <link href="https://cosmoswei.github.io/gogogo/">
+        </link>
+        <updated>2023-12-30T12:02:47.000Z</updated>
+    </entry>
+</feed>
