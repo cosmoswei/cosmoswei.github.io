@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://cosmoswei.github.io</id>
+    <title>cosmoswei go</title>
+    <updated>2024-06-25T02:16:44.008Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://cosmoswei.github.io"/>
+    <link rel="self" href="https://cosmoswei.github.io/atom.xml"/>
+    <subtitle>知行合一</subtitle>
+    <logo>https://cosmoswei.github.io/images/avatar.png</logo>
+    <icon>https://cosmoswei.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2024, cosmoswei go</rights>
+    <entry>
+        <title type="html"><![CDATA[【W26/2024】算子&索引&谓词下推]]></title>
+        <id>https://cosmoswei.github.io/w262024-suan-zi-andsuo-yin-andwei-ci-xia-tui/</id>
+        <link href="https://cosmoswei.github.io/w262024-suan-zi-andsuo-yin-andwei-ci-xia-tui/">
+        </link>
+        <updated>2024-06-24T16:57:22.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W26/2024】Caffeine 性能高效的秘密（Kimi）]]></title>
+        <id>https://cosmoswei.github.io/w262024-caffeine-wei-shi-me-kuai/</id>
+        <link href="https://cosmoswei.github.io/w262024-caffeine-wei-shi-me-kuai/">
+        </link>
+        <updated>2024-06-24T16:56:47.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W26/2024】Redis 底层数据结构]]></title>
+        <id>https://cosmoswei.github.io/w262024-redis-di-ceng-shu-ju-jie-gou/</id>
+        <link href="https://cosmoswei.github.io/w262024-redis-di-ceng-shu-ju-jie-gou/">
+        </link>
+        <updated>2024-06-24T16:55:30.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W26/2024】MySQL&ES 深翻页]]></title>
+        <id>https://cosmoswei.github.io/w262024-mysqlandes-shen-fan-ye/</id>
+        <link href="https://cosmoswei.github.io/w262024-mysqlandes-shen-fan-ye/">
+        </link>
+        <updated>2024-06-24T16:52:25.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W23/2024】Java 中的线程同步]]></title>
+        <id>https://cosmoswei.github.io/w232024-java-zhong-de-xian-cheng-tong-bu/</id>
+        <link href="https://cosmoswei.github.io/w232024-java-zhong-de-xian-cheng-tong-bu/">
+        </link>
+        <updated>2024-06-05T04:12:37.000Z</updated>
+        <summary type="html"><![CDATA[<p>Java 中的线程同步方式令人眼花撩乱，JDK提供的工具与方法学习与使用起来容易混淆，本文通过Object、Thread、Lock、Lock Support几个类类帮你梳理这些概念，希望对你有帮助。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Java 中的线程同步方式令人眼花撩乱，JDK提供的工具与方法学习与使用起来容易混淆，本文通过Object、Thread、Lock、Lock Support几个类类帮你梳理这些概念，希望对你有帮助。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W20/2024】摸排各种“规则“引擎]]></title>
+        <id>https://cosmoswei.github.io/mo-pai-ge-chong-gui-ze-yin-qing/</id>
+        <link href="https://cosmoswei.github.io/mo-pai-ge-chong-gui-ze-yin-qing/">
+        </link>
+        <updated>2024-05-18T15:31:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>优秀的架构师，即使是业务要求快速上线，也留好了充分的扩展空间。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>优秀的架构师，即使是业务要求快速上线，也留好了充分的扩展空间。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W20/2024】RPC调用中的序列化问题]]></title>
+        <id>https://cosmoswei.github.io/w202024-rpc-diao-yong-zhong-de-xu-lie-hua-wen-ti/</id>
+        <link href="https://cosmoswei.github.io/w202024-rpc-diao-yong-zhong-de-xu-lie-hua-wen-ti/">
+        </link>
+        <updated>2024-05-18T08:03:25.000Z</updated>
+        <summary type="html"><![CDATA[<p>在使用 SpringBoot 的默认序列化方式 Jackson 时，如果在执行 RPC，并且参数中含有 Map 类型的字段时，如果不做特别的处理，会抛出异常，提示参数不能是 LinkedHashMap，这遍文章将探寻报错的原因与解决方法。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在使用 SpringBoot 的默认序列化方式 Jackson 时，如果在执行 RPC，并且参数中含有 Map 类型的字段时，如果不做特别的处理，会抛出异常，提示参数不能是 LinkedHashMap，这遍文章将探寻报错的原因与解决方法。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W18/2024】SATB 和 TLAB]]></title>
+        <id>https://cosmoswei.github.io/satb-he-tlab/</id>
+        <link href="https://cosmoswei.github.io/satb-he-tlab/">
+        </link>
+        <updated>2024-05-01T15:20:25.000Z</updated>
+        <summary type="html"><![CDATA[<p>在学习JVM 的过程中，会出现两个长的很像的概念 SATB（Snapshot At The Beginning）和 TLAB（Thread Local Allocation Buffer），但是它们却有不同的功能，为了更好地理解它们，让我们对这两个概念进行详细的梳理和记录。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在学习JVM 的过程中，会出现两个长的很像的概念 SATB（Snapshot At The Beginning）和 TLAB（Thread Local Allocation Buffer），但是它们却有不同的功能，为了更好地理解它们，让我们对这两个概念进行详细的梳理和记录。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W11/2024】学习资料链接]]></title>
+        <id>https://cosmoswei.github.io/w112024-xue-xi-zi-liao-lian-jie/</id>
+        <link href="https://cosmoswei.github.io/w112024-xue-xi-zi-liao-lian-jie/">
+        </link>
+        <updated>2024-03-16T07:48:32.000Z</updated>
+        <summary type="html"><![CDATA[<p>入行以来收集的学习资料的链接，做了一个简单的汇总。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>入行以来收集的学习资料的链接，做了一个简单的汇总。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W09/2024】Triple 协议调用流程解析]]></title>
+        <id>https://cosmoswei.github.io/w092024-triple-xie-yi-diao-yong-liu-cheng-jie-xi/</id>
+        <link href="https://cosmoswei.github.io/w092024-triple-xie-yi-diao-yong-liu-cheng-jie-xi/">
+        </link>
+        <updated>2024-03-01T15:26:08.000Z</updated>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W08/2024】Java 网络编程中的一些概念]]></title>
+        <id>https://cosmoswei.github.io/java-wang-luo-bian-cheng-zhong-de-yi-xie-gai-nian/</id>
+        <link href="https://cosmoswei.github.io/java-wang-luo-bian-cheng-zhong-de-yi-xie-gai-nian/">
+        </link>
+        <updated>2024-02-22T15:39:53.000Z</updated>
+        <summary type="html"><![CDATA[<p>这篇文章简单介绍一些在 Java 网络编程中，经常遇到的一些概念，比如 Socket、Select、Selector 等，避免在具体使用它们的时候，混淆它们的作用。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>这篇文章简单介绍一些在 Java 网络编程中，经常遇到的一些概念，比如 Socket、Select、Selector 等，避免在具体使用它们的时候，混淆它们的作用。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W07/2024】Dubbo 调用流程源码简要梳理]]></title>
+        <id>https://cosmoswei.github.io/w72024-dubbo-diao-yong-liu-cheng-shu-li-cao-gao/</id>
+        <link href="https://cosmoswei.github.io/w72024-dubbo-diao-yong-liu-cheng-shu-li-cao-gao/">
+        </link>
+        <updated>2024-02-17T16:20:46.000Z</updated>
+        <summary type="html"><![CDATA[<p>最近在梳理 Dubbo 是怎么跟 Netty 结合在一起，响应来自客户端的网络请求的，针对 Dubbo 3.3 版本的 Triple 协议做了一个简要分析。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>最近在梳理 Dubbo 是怎么跟 Netty 结合在一起，响应来自客户端的网络请求的，针对 Dubbo 3.3 版本的 Triple 协议做了一个简要分析。</p>
+]]></content>
+    </entry>
+</feed>
