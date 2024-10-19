@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W52/2023】网络通信如何选择？寄信、打电话还是视频通话？ | cosmoswei go</title>
+<meta name="description" content="知行合一">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1729354388794">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1729354388794" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W52/2023】网络通信如何选择？寄信、打电话还是视频通话？</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2023-12-31</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <p>在网络通信的世界里，我们经常听说短连接、长轮询、Web Socket 等词汇，它们究竟是什么，又有什么不同呢？就让我们用生活中的比喻，从寄信到视频通话，再到音视频通信，来探索这些概念的奥秘。</p>
+<!-- more -->
+<h2 id="1-短连接寄信的艺术">1. <strong>短连接：寄信的艺术</strong></h2>
+<p>首先，我们谈到了短连接，就像给朋友寄信。你寄出一封信，然后等待朋友回信。每封信都是一个短暂的连接，你必须等待回信才能提出下一个问题。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>简单、易于实现。</li>
+<li>对服务器资源的占用短暂。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>每次通信都需要重新建立连接，增加了开销。</li>
+<li>不适合实时通信需求。</li>
+</ul>
+<p>这就像我们平时在网页上的请求-响应机制。每个请求都是一次短连接，服务器响应后连接就关闭。就像寄信一样，每次沟通都是一个独立的事件。</p>
+<h2 id="2-长轮询电话中的等待">2. <strong>长轮询：电话中的等待</strong></h2>
+<p>接下来，我们有了长轮询，这就像打电话问问题，但朋友不会立即回答。相反，他们会保持电话线打开，等到有了答案才回复你。这是一种稍微持续一些时间的连接。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>减少了频繁建立连接的开销。</li>
+<li>更适合实时通信，相较于短连接有更短的延迟。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>仍然需要周期性地重新建立连接。</li>
+<li>服务器需要保持连接状态，增加了资源占用。</li>
+</ul>
+<p>在网络通信中，长轮询是一种在等待服务器响应的同时保持连接打开的机制。就像电话中的等待，你不用一直重新拨号。</p>
+<h2 id="3-长连接电话通话的持续">3. <strong>长连接：电话通话的持续</strong></h2>
+<p>接下来，让我们谈一谈长连接，就像是你和朋友开启了一次长时间的电话通话，而不是短时间的问答。在一段时间内，你们可以随时说话，不需要重新拨号建立连接。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>减少了频繁建立连接的开销。</li>
+<li>可以在一段时间内进行多次数据传输，适用于需要实时性的场景。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>长时间保持连接会占用服务器资源。</li>
+<li>不适合所有应用，特别是短暂通信的场景。</li>
+</ul>
+<p>长连接在网络通信中是一种保持连接打开一段时间，允许多次数据传输的机制。这就像一场长时间的电话通话，让你在一段时间内与服务器保持沟通。</p>
+<h2 id="4-传统-socket对讲机的默契">4. <strong>传统 Socket：对讲机的默契</strong></h2>
+<p>传统 Socket 则像是你和朋友在对讲机上交流。虽然不能同时说话，但你们都可以是发送者也可以是接收者，有了互动的余地。这是一种更底层的、灵活性更高的通信方式。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>灵活性高，可以实现各种通信模型。</li>
+<li>可以在不同的应用层协议上运行。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>需要程序员自行处理连接的建立和维护。</li>
+<li>相对复杂，不如高层协议易于使用。</li>
+</ul>
+<p>传统 Socket 可以用于各种网络通信应用，类似于对讲机在特定场景中的应用。</p>
+<h2 id="5-web-socket视频通话的畅谈">5. <strong>Web Socket：视频通话的畅谈</strong></h2>
+<p>现在，我们谈到了 Web Socket，这就像在视频通话中，你和朋友可以同时说话和听到对方说话。信息的交流是实时的、双向的，更像是真实的面对面对话。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>实现了全双工通信，客户端和服务器可以同时发送和接收数据。</li>
+<li>实时性更强，适用于需要频繁通信的应用。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>握手时的开销较大。</li>
+<li>不适合一些简单的请求-响应场景。</li>
+</ul>
+<p>Web Socket 提供了全双工通信模型，允许客户端和服务器之间在同一时间内进行双向通信。这使得实时通信更加高效，就像你和朋友在视频通话一样。</p>
+<h2 id="6-全双工通信与半全双工通信对话的形式">6. <strong>全双工通信与半全双工通信：对话的形式</strong></h2>
+<p>在这里，我们还需要了解一下通信中的两个重要概念：全双工通信和半全双工通信。</p>
+<ul>
+<li><strong>全双工通信：</strong> 就像在视频通话中，你和朋友可以同时说话和听到对方说话。信息的交流是实时的、双向的，更像是真实的面对面对话。全双工通信允许客户端和服务器在同一时间内进行双向通信。</li>
+<li><strong>半全双工通信：</strong> 类似于对讲机的场景，虽然不能同时说话，但你们都可以是发送者也可以是接收者，有了互动的余地。半全双工通信允许信息在两个方向上交替进行，但不能同时进行。</li>
+</ul>
+<h2 id="7-音视频通信智能手机上的视频通话">7. <strong>音视频通信：智能手机上的视频通话</strong></h2>
+<p>现在，让我们进一步探讨一下音视频通信。这就像你和朋友在智能手机上进行视频通话，不仅可以听到对方的声音，还能看到对方的实时画面。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>提供了更丰富的交流方式，包括声音和图像。</li>
+<li>适用于需要更直观、真实沟通的场景。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>对网络带宽和性能要求较高。</li>
+<li>需要额外的技术支持，如编解码和实时传输协议。</li>
+</ul>
+<p>音视频通信使得网络通信更加生动，它仿佛把你带到了对方面前，实现了更为直观的交流。</p>
+<h2 id="8-webrtc开启浏览器中的实时通信">8. <strong>WebRTC：开启浏览器中的实时通信</strong></h2>
+<p>最后，让我们了解一下 WebRTC。WebRTC 是一种支持浏览器之间实时音频、视频通信和数据传输的开放标准和项目。它允许开发者在不需要安装任何额外插件或应用程序的情况下，直接在网页中实现实时通信功能。WebRTC 的目标是提供一套简单的API，使开发者能够轻松地在网页上嵌入实时通信的功能，例如视频聊天、语音通话、文件传输等。</p>
+<p><strong>优点：</strong></p>
+<ol>
+<li><strong>实时性：</strong> WebRTC 提供了低延迟的实时通信，适用于需要及时响应的应用场景，如视频会议和在线协作。</li>
+<li><strong>跨平台支持：</strong> 由于是基于浏览器的开放标准，WebRTC 得到了主流浏览器的广泛支持，使得开发者可以构建跨平台、跨设备的应用。</li>
+<li><strong>开源：</strong> WebRTC 是开源的，这意味着开发者可以查看源代码、进行定制，也可以贡献代码来帮助改进项目。</li>
+<li><strong>不需要额外插件：</strong> 用户在使用 WebRTC 功能时，不需要安装额外的插件或应用程序，减少了用户的操作复杂性。</li>
+</ol>
+<p><strong>缺点：</strong></p>
+<ol>
+<li><strong>适用性：</strong> WebRTC 更适用于点对点的通信，而在需要多方通信的场景中可能需要额外的开发工作。</li>
+<li><strong>安全性考虑：</strong> 因为 WebRTC 允许浏览器直接访问用户的摄像头和麦克风，所以在实际应用中需要特别关注安全性，防止恶意行为。</li>
+<li><strong>网络要求：</strong> 对于实时音视频通信，WebRTC 对网络的要求较高，较差的网络条件可能导致通信质量下降。</li>
+</ol>
+<p>WebRTC 主要由Google、Mozilla和Opera等公司推动，是开源的，并在一些主要浏览器中得到了广泛的支持，包括Google Chrome、Mozilla Firefox、Microsoft Edge等。这种广泛的支持使得开发者能够构建跨浏览器的实时通信应用程序。WebRTC 的应用范围非常广泛，从在线视频会议、远程协作工具，到在线教育和医疗应用，都可以使用 WebRTC 来实现实时通信的需求。</p>
+<p>网络通信就像我们在生活中的各种交流方式一样，有了这些不同的方法，我们可以更灵活、更高效地与网络世界进行互动。从寄信到视频通话，再到音视频通信，每一种方式都有其独特的优势和应用场景，取决于我们的需求和情境。让我们在网络通信的世界中自如畅游吧！</p>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/gogogo/">
+              <h3 class="post-title">
+                下一篇：【W52/2023】存储碎片问题
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">知行合一</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
