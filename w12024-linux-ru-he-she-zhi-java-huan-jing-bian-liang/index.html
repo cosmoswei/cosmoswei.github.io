@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W01/2024】Linux 如何设置 Java 环境变量 | cosmoswei go</title>
+<meta name="description" content="知行合一">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1733589457556">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1733589457556" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W01/2024】Linux 如何设置 Java 环境变量</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2024-01-01</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <h2 id=""></h2>
+<ol>
+<li>
+<p>打开终端，以管理员或root权限登录。</p>
+</li>
+<li>
+<p>确认您已经安装了Java开发工具包（JDK）。您可以使用以下命令检查Java是否已安装：</p>
+<pre><code class="language-shell">java -version
+</code></pre>
+<p>如果Java未安装，可以使用包管理器（如apt、yum等）安装Java。</p>
+</li>
+<li>
+<p>设置JAVA_HOME变量：</p>
+<ul>
+<li>
+<p>确定JDK的安装路径。您可以使用以下命令找到JDK的安装路径：</p>
+<pre><code class="language-shell">readlink -f $(which java) | sed &quot;s:bin/java::&quot;
+</code></pre>
+</li>
+<li>
+<p>打开终端配置文件（如.bashrc、.bash_profile、.zshrc等），可以使用以下命令打开：</p>
+<pre><code class="language-shell">vi ~/.bashrc
+</code></pre>
+</li>
+<li>
+<p>在文件末尾添加以下行，将JDK的安装路径替换为您在第一步中找到的路径：</p>
+<pre><code class="language-shell">export JAVA_HOME=/path/to/your/jdk
+export PATH=$JAVA_HOME/bin:$PATH
+</code></pre>
+</li>
+<li>
+<p>保存并关闭文件。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>更新环境变量：</p>
+<ul>
+<li>
+<p>执行以下命令，使新的环境变量生效：</p>
+<pre><code class="language-shell">source ~/.bashrc
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>验证设置是否成功：</p>
+<ul>
+<li>
+<p>使用以下命令检查JAVA_HOME是否正确设置：</p>
+<pre><code class="language-shell">echo $JAVA_HOME
+</code></pre>
+</li>
+<li>
+<p>使用以下命令检查Java版本是否正确：</p>
+<pre><code class="language-shell">java -version
+</code></pre>
+</li>
+</ul>
+</li>
+</ol>
+<p>现在，您已经成功设置了Java变量。您可以在终端中运行Java命令，并在开发环境中使用JAVA_HOME变量。</p>
+
+          </div>
+        </div>
+
+        
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">知行合一</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
