@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W44/2024】配置驱动：灵活的配置指标与评分体系 | cosmoswei go</title>
+<meta name="description" content="知行合一">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1733763119078">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1733763119078" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+            <div class="feature-container" style="background-image: url('https://raw.githubusercontent.com/cosmoswei/images/main/202412080035334.png')">
+            </div>
+          
+          <h2 class="post-title">【W44/2024】配置驱动：灵活的配置指标与评分体系</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2024-11-03</span>
+            
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://cosmoswei.github.io/tag/NbGSsfmKvb/">
+                    palmx
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <p><a href="https://cosmoswei.github.io/w442024-shuang-duan-liu-kong-zi-gua-ying-de-fu-zai-jun-heng-yu-liu-liang-kong-zhi/">前文</a>说到，自适应负载均衡与流控，将 CPU 负载、RT、上线时间通过一个公式来计算一个权重值或阈值，但是这个公式通用型可能不够，服务节点的性能存在差异，因为在不同的机器有不同的硬件资源，比如有些机器是 I/ O 特别强，有比较高的的 IOPS，有些机器有更高的 CPU 频率，CPU处理性能比较高，所以通过一个算法去计算最大并发量，通用性比较低，计算出来的最大并发量可能不够准确，并且这几个的指标并不能完全体现真实的服务节点负载，那么还有那些指标可以更加科学得体现节点负载呢？</p>
+<!-- more -->
+<h2 id="有哪些指标">有哪些指标</h2>
+<p>以下是对各项指标的详细说明和作用的介绍：</p>
+<h3 id="cpu">CPU</h3>
+<p><strong>使用率</strong></p>
+<p>含义：指 CPU 的忙碌时间占总时间的比例，通常以百分比表示。</p>
+<p>作用：</p>
+<ul>
+<li>
+<p>过高：表明 CPU 负载过重，可能需要优化程序或扩展资源。</p>
+</li>
+<li>
+<p>过低：表明资源未充分利用。</p>
+</li>
+</ul>
+<p>采集方法：</p>
+<ul>
+<li>JVM 级别：通过 OperatingSystemMXBean 获取进程 CPU 使用率。</li>
+<li>系统级别：通过工具如 top、sar 查看整体 CPU 使用率。</li>
+</ul>
+<p><strong>负载</strong></p>
+<p>含义：指一段时间内系统处理任务的能力，通常包括 1 分钟、5 分钟和 15 分钟的平均负载值。</p>
+<p>作用：理解系统是否过载。负载接近或超过 CPU 核心数时，可能导致任务队列积压。</p>
+<p>采集方法：Linux 系统：uptime 或 top 命令中的 Load Average 值。</p>
+<h3 id="内存">内存</h3>
+<p><strong>使用率</strong></p>
+<p>含义：内存使用量占总可用内存的比例。</p>
+<p>作用：过高可能导致频繁的内存交换（Swap）或 OOM（内存溢出）。</p>
+<p>采集方法：</p>
+<ul>
+<li>系统级别：free、vmstat 查看内存使用情况。</li>
+<li>JVM 级别：Runtime.getRuntime().totalMemory() 和 freeMemory()。</li>
+</ul>
+<p><strong>负载</strong></p>
+<p>含义：描述内存的使用压力，结合使用率和交换频率（Swap）进行分析。</p>
+<p>作用：如果内存不足，会影响程序性能，可能需要优化或增加物理内存。</p>
+<p>采集方法：监控交换区的使用频率（vmstat 中的 si 和 so 字段）。</p>
+<h3 id="磁盘">磁盘</h3>
+<p><strong>IOPS</strong></p>
+<p>含义：每秒磁盘的读写操作次数。</p>
+<p>作用：衡量磁盘性能。高 IOPS 表明磁盘繁忙，过高的 IOPS 可能导致延迟增加。</p>
+<p>采集方法：iostat 工具。</p>
+<p><strong>读写延迟</strong></p>
+<p>含义：磁盘读写操作的平均等待时间，通常以毫秒（ms）为单位。</p>
+<p>作用：延迟高可能表明磁盘瓶颈或 I/O 队列积压。</p>
+<p>采集方法：系统级别：iostat 中的 await 字段。</p>
+<h3 id="网络">网络</h3>
+<p><strong>带宽</strong></p>
+<p>含义：网络的最大传输能力，通常以 Mbps（每秒兆位）或 Gbps 表示。</p>
+<p>作用：衡量网络传输速度是否满足应用需求，过高的带宽占用可能导致拥塞。</p>
+<p>采集方法：</p>
+<ul>
+<li>
+<p>系统级别：iftop 或 nload 工具。</p>
+</li>
+<li>
+<p>应用级别：抓取传输流量数据。</p>
+</li>
+</ul>
+<p><strong>延迟</strong></p>
+<p>含义：从一个网络节点到另一个网络节点所需的时间，通常以毫秒（ms）表示。</p>
+<p>作用：高延迟会影响实时性要求高的应用（如流媒体、在线游戏）。</p>
+<p>采集方法：使用 ping 测试 RTT（Round Trip Time）。</p>
+<h3 id="jvm">JVM</h3>
+<p><strong>堆使用率</strong></p>
+<p>含义：JVM 堆内存中已用内存占总堆内存的比例。</p>
+<p>作用：高堆使用率可能导致频繁 GC。</p>
+<p>采集方法：使用 MemoryMXBean 或者 JVisualVM。</p>
+<p><strong>GC 吞吐</strong></p>
+<p>含义：GC 运行期间清理的内存占 GC 总时间的比例。</p>
+<p>作用：高吞吐率表明 GC 效率较高。</p>
+<p>采集方法：通过 GC 日志分析。</p>
+<p><strong>GC 延迟</strong></p>
+<p>含义：GC 触发后暂停程序执行的时间。</p>
+<p>作用：长时间 GC 延迟会影响用户体验。</p>
+<p>采集方法：分析 GC 日志中的 pause 时间。</p>
+<p><strong>GC 时间</strong></p>
+<p>含义：JVM 执行垃圾回收所用的总时间。</p>
+<p>作用：高 GC 时间占用会导致性能下降。</p>
+<p>采集方法：使用 GC 日志或 GarbageCollectorMXBean。</p>
+<p>STW <strong>时间</strong></p>
+<p>含义：JVM 执行 GC 或其他任务时暂停所有应用线程的时间。</p>
+<p>作用：较高的 STW 时间会影响程序响应能力。</p>
+<p>采集方法：GC 日志中的 Total Pause Time。</p>
+<h3 id="线程">线程</h3>
+<p><strong>数量</strong></p>
+<p>含义：当前 Java 程序中线程的总数。</p>
+<p>作用：过多线程可能导致上下文切换开销增加；过少线程可能导致资源未充分利用。</p>
+<p>采集方法：使用 ThreadMXBean 获取线程数量；top 或 htop 查看线程数。</p>
+<h2 id="获取指标的框架">获取指标的框架</h2>
+<h3 id="jdk-jmx">JDK JMX</h3>
+<p>JDK 提供了多种 MXBean（Managed Bean），它们通过 JMX（Java Management Extensions）接口暴露 JVM 的运行时信息，方便开发者监控和管理 Java 应用程序。以下是主要的 MXBean 及其作用和详细解释：</p>
+<ol>
+<li>MemoryMXBean：提供 JVM 内存使用情况，包括堆内存和非堆内存的管理信息；支持垃圾回收的基本操作。</li>
+</ol>
+<pre><code class="language-java">public class MemoryMXBeanExample {
+    public static void main(String[] args) {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+
+        // 堆内存使用情况
+        MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();
+        System.out.println(&quot;Heap Memory Used: &quot; + heapMemoryUsage.getUsed());
+        System.out.println(&quot;Heap Memory Max: &quot; + heapMemoryUsage.getMax());
+
+        // 非堆内存使用情况
+        MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();
+        System.out.println(&quot;Non-Heap Memory Used: &quot; + nonHeapMemoryUsage.getUsed());
+        System.out.println(&quot;Non-Heap Memory Max: &quot; + nonHeapMemoryUsage.getMax());
+      
+     		// 主动触发垃圾回收。
+    	  memoryMXBean.gc();
+    }
+}
+</code></pre>
+<ol start="2">
+<li>GarbageCollectorMXBean：提供 JVM 中垃圾回收器的性能数据。</li>
+</ol>
+<pre><code class="language-java">public class GarbageCollectorMXBeanExample {
+    public static void main(String[] args) {
+        List&lt;GarbageCollectorMXBean&gt; gcMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
+        for (GarbageCollectorMXBean gcMXBean : gcMXBeans) {
+            System.out.println(&quot;GC Name: &quot; + gcMXBean.getName());
+            System.out.println(&quot;Collection Count: &quot; + gcMXBean.getCollectionCount());
+            System.out.println(&quot;Collection Time: &quot; + gcMXBean.getCollectionTime() + &quot;ms&quot;);
+        }
+    }
+}
+</code></pre>
+<ol start="3">
+<li>ThreadMXBean：提供 JVM 中线程的状态信息和性能数据；支持检测死锁。</li>
+</ol>
+<pre><code class="language-java">public class ThreadMXBeanExample {
+    public static void main(String[] args) {
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+
+        // 活跃线程数
+        System.out.println(&quot;Thread Count: &quot; + threadMXBean.getThreadCount());
+        System.out.println(&quot;Daemon Thread Count: &quot; + threadMXBean.getDaemonThreadCount());
+
+        // 获取所有线程信息
+        ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(false, false);
+        for (ThreadInfo threadInfo : threadInfos) {
+            System.out.println(&quot;Thread Name: &quot; + threadInfo.getThreadName());
+            System.out.println(&quot;Thread State: &quot; + threadInfo.getThreadState());
+        }
+      
+      	//- findDeadlockedThreads()：检测死锁线程。
+      	//- getThreadCpuTime(threadId)：获取线程的 CPU 时间。
+    }
+}
+</code></pre>
+<ol start="4">
+<li>RuntimeMXBean：提供 JVM 的运行时信息。</li>
+</ol>
+<ul>
+<li>getVmName()：获取 JVM 名称。</li>
+<li>getVmVersion()：获取 JVM 版本。</li>
+<li>getStartTime()：获取 JVM 启动时间。</li>
+<li>getUptime()：获取 JVM 运行时间。</li>
+</ul>
+<ol start="5">
+<li>OperatingSystemMXBean：提供底层操作系统的相关信息。</li>
+</ol>
+<pre><code class="language-java">public class OperatingSystemMXBeanExample {
+    public static void main(String[] args) {
+        OperatingSystemMXBean osMXBean = ManagementFactory.getOperatingSystemMXBean();
+
+        System.out.println(&quot;OS Name: &quot; + osMXBean.getName());
+        System.out.println(&quot;OS Architecture: &quot; + osMXBean.getArch());
+        System.out.println(&quot;Available Processors: &quot; + osMXBean.getAvailableProcessors());
+        System.out.println(&quot;System Load Average: &quot; + osMXBean.getSystemLoadAverage());
+    }
+}
+</code></pre>
+<ol start="6">
+<li>CompilationMXBean：提供 JIT 编译器的相关信息。</li>
+</ol>
+<ul>
+<li>getName()：获取 JIT 编译器名称。</li>
+<li>getTotalCompilationTime()：获取编译任务的总时间。</li>
+</ul>
+<ol start="7">
+<li>ClassLoadingMXBean：提供 JVM 中类加载器的状态信息。</li>
+</ol>
+<ul>
+<li>getLoadedClassCount()：获取当前加载的类数量。</li>
+<li>getTotalLoadedClassCount()：获取自 JVM 启动以来加载的类总数。</li>
+<li>getUnloadedClassCount()：获取已卸载的类总数。</li>
+</ul>
+<ol start="8">
+<li>BufferPoolMXBean：提供 JVM 中直接内存的使用信息。</li>
+</ol>
+<ul>
+<li>getName()：获取缓冲池名称（如 “direct” 和 “mapped”）。</li>
+<li>getCount()：获取缓冲池中缓冲区的数量。</li>
+<li>getTotalCapacity()：获取缓冲池总容量（字节）。</li>
+<li>getMemoryUsed()：获取缓冲池使用的内存量。</li>
+</ul>
+<p>除了上述具体的 MXBean，JDK 的 ManagementFactory 类还可以用来获取所有标准的 MXBean 实例。常用方法如下：</p>
+<ul>
+<li>
+<p>ManagementFactory.getMemoryMXBean()：获取 MemoryMXBean 实例。</p>
+</li>
+<li>
+<p>ManagementFactory.getGarbageCollectorMXBeans()：获取所有垃圾回收器的实例列表。</p>
+</li>
+<li>
+<p>ManagementFactory.getPlatformMXBeans(Class<T> mxBeanInterface)：获取所有指定类型的 MXBean。</p>
+</li>
+</ul>
+<pre><code class="language-java">public class JvmMonitoringTool {
+    public static void main(String[] args) {
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+        OperatingSystemMXBean osMXBean = ManagementFactory.getOperatingSystemMXBean();
+        List&lt;GarbageCollectorMXBean&gt; gcMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
+
+        System.out.println(&quot;===== JVM Monitoring Tool =====&quot;);
+        System.out.println(&quot;Heap Memory Used: &quot; + memoryMXBean.getHeapMemoryUsage().getUsed());
+        System.out.println(&quot;Heap Memory Max: &quot; + memoryMXBean.getHeapMemoryUsage().getMax());
+        System.out.println(&quot;Thread Count: &quot; + threadMXBean.getThreadCount());
+        System.out.println(&quot;OS Name: &quot; + osMXBean.getName());
+        System.out.println(&quot;System Load Average: &quot; + osMXBean.getSystemLoadAverage());
+
+        System.out.println(&quot;Garbage Collector Details:&quot;);
+        for (GarbageCollectorMXBean gcMXBean : gcMXBeans) {
+            System.out.println(&quot;- &quot; + gcMXBean.getName() + &quot;: &quot; + gcMXBean.getCollectionCount() + &quot; collections, &quot;
+                    + gcMXBean.getCollectionTime() + &quot;ms&quot;);
+        }
+    }
+}
+</code></pre>
+<h3 id="sigar">Sigar</h3>
+<p>Sigar（System Information Gatherer and Reporter） 是一个跨平台的系统性能监控库，可以用来收集操作系统级别的性能指标。它支持多种编程语言，包括 Java、C、Python 和 Perl 等，常用于实时监控系统的运行状态。Sigar 提供了多种功能，可以收集以下系统性能指标：CPU、内存、磁盘网络</p>
+<p><strong>Sigar 的局限性</strong></p>
+<p>​	1.	<strong>依赖 JNI</strong>：需要本地库支持，不同平台的 Sigar 库需要单独打包。</p>
+<p>​	2.	<strong>维护较少</strong>：Sigar 最近的版本较老，社区更新较少。</p>
+<p>​	3.	<strong>复杂的环境依赖</strong>：在某些环境中可能需要手动加载动态库。</p>
+<h3 id="oshi">OSHI</h3>
+<p>OSHI (Operating System and Hardware Information) 是一个轻量级的、基于 Java 的开源库，用于收集操作系统和硬件的实时性能数据。它是纯 Java 实现的，不依赖 JNI，因此具有跨平台性和易于集成的优点。OSHI 的名称取自其功能：操作系统 (Operating System) 和硬件信息 (Hardware Information)。</p>
+<p><strong>OSHI 的特点</strong></p>
+<p>​	1.	<strong>纯 Java 实现</strong>：无需本地动态链接库（如 .so 或 .dll），可以直接在任何支持 JVM 的系统上运行。</p>
+<p>​	2.	<strong>跨平台支持</strong>：支持 Windows、Linux、macOS 和 Unix。</p>
+<p>​	3.	<strong>易于使用</strong>：API 设计简单直观，适合开发性能监控工具。</p>
+<p>​	4.	<strong>实时数据</strong>：可以获取 CPU、内存、磁盘、网络等系统性能指标。</p>
+<p>​	5.	<strong>活跃的社区</strong>：OSHI 社区维护较好，定期更新支持更多的操作系统特性。</p>
+<p><strong>OSHI 的优点</strong></p>
+<p>​	1.	<strong>跨平台</strong>：纯 Java 实现，无需 JNI，本地依赖更少。</p>
+<p>​	2.	<strong>实时性能监控</strong>：适用于多种监控和诊断场景。</p>
+<p>​	3.	<strong>简单易用</strong>：API 设计直观，易于集成。</p>
+<p>​	4.	<strong>轻量级</strong>：相对于 Sigar，更适合现代 Java 应用。</p>
+<p><strong>OSHI 的缺点</strong></p>
+<p>​	1.	<strong>底层依赖系统命令</strong>：某些指标可能依赖底层系统命令实现，可能受操作系统限制。</p>
+<p>​	2.	<strong>功能限制</strong>：不如 Sigar 提供的指标全面，例如特定的硬件统计。</p>
+<p><strong>OSHI 的适用场景</strong></p>
+<p>​	1.	<strong>系统监控</strong>：实时监控服务器性能，生成性能报表。</p>
+<p>​	2.	<strong>故障诊断</strong>：通过 OSHI 的硬件信息，分析性能瓶颈。</p>
+<p>​	3.	<strong>开发工具</strong>：用于开发集成系统性能信息的应用，例如管理控制台。</p>
+<h3 id="micrometer">Micrometer</h3>
+<p>Micrometer 是一个应用指标 (Metrics) 收集与管理的 Java 库，旨在提供统一的 API，帮助开发者采集、处理、和导出应用的性能和业务指标。它是 Spring Boot 的默认指标库，被集成到 Spring Boot Actuator 中，用于监控和观察应用状态。</p>
+<p><strong>Micrometer 的特点</strong></p>
+<ol>
+<li>统一 API：无论使用什么监控后端（如 Prometheus、Graphite、Datadog），开发者只需使用统一的 Micrometer API 进行指标采集。</li>
+<li>多后端支持：支持多种监控后端（Prometheus、Datadog、InfluxDB、Elastic、AWS CloudWatch 等），可以同时向多个后端发送指标。</li>
+<li>集成度高：与 Spring Boot、Micronaut 等框架深度集成，方便在现代微服务架构中使用。</li>
+<li>丰富的指标类型：</li>
+</ol>
+<ul>
+<li>计数器 (Counter)：记录递增的指标，如请求次数。</li>
+<li>计量表 (Gauge)：记录瞬时值，如内存使用率。</li>
+<li>计时器 (Timer)：记录操作的时间分布。</li>
+<li>分布摘要 (Distribution Summary)：记录数值分布（如请求大小）。</li>
+<li>长任务计时器 (Long Task Timer)：记录长时间运行任务的持续时间。</li>
+<li>线程安全：设计时考虑了多线程环境的并发使用。</li>
+</ul>
+<p>Micrometer 的优点</p>
+<p>​	1.	统一接口：对不同的监控后端提供了统一的指标收集 API。</p>
+<p>​	2.	扩展性强：支持多种监控后端，并且可以同时向多个后端发送指标。</p>
+<p>​	3.	无锁设计：高效且线程安全。</p>
+<p>​	4.	与 Spring Boot 深度集成：简化了微服务开发中的监控工作。</p>
+<p>Micrometer 的缺点</p>
+<p>​	1.	学习曲线：对非熟悉监控体系的开发者来说，可能需要时间学习如何设计指标。</p>
+<p>​	2.	依赖后端配置：需要熟悉和配置所使用的监控后端（如 Prometheus、Datadog）。</p>
+<h3 id="spring-actuator">Spring Actuator</h3>
+<p>Spring Boot Actuator 是 Spring Boot 提供的一组生产就绪功能，用于监控和管理 Spring Boot 应用程序。它为开发者和运维人员提供了丰富的内置功能，包括应用状态检查、指标监控、日志管理以及应用程序的运行时信息。</p>
+<p>Actuator 是微服务架构中监控和管理服务的重要工具，与 Micrometer 一起使用时，可以将应用的运行数据发送到监控系统（如 Prometheus 或 Grafana）中。</p>
+<h2 id="如何让计算负载">如何让计算负载</h2>
+<h3 id="dubbo-的指数加权平均">Dubbo 的指数加权平均</h3>
+<p>我想通过配置化的方式去计算这个最大变化量，通过提取一些服务器的性能指标，比如说CPU使用率、网络时延，线程数等等。组合出一个可配置的公式得到这个机器最大，我觉得这是一个可行的方案，但是这个怎么去配置呢？我想的是，用一个评分体系去评估一个系统的最大并发量，比如说如果它的最大并发量比较高的话，他的分数就高，反之亦然。这样就根据这个分数去得到机器的最大并发量，那么这个评分怎么得出来呢？，在电商业务中有一种技术叫做风控，风控的核心是使用规则引擎，根据用户的一些操作行为或者用户属性，得到用户的风控分数，并且这个规则是可以由运营去配置的。这与我们的情况相似，把服务器看成用户。服务器的最大并发量可以看成用户的风控评分，服务器服务器的并发量计算算法可以看作风控规则。这样就可以在开发时，去配置具体的机器最大并发量计算算法，得到最能体现当前机器最大并发量的分数，通过这个分数可以帮助我们更好的实现自适应适应负债均衡与流量控制</p>
+<h3 id=""></h3>
+<h2 id="引入规则引擎">引入规则引擎</h2>
+<h3 id="电商风控">电商风控</h3>
+<h2 id="实战">实战</h2>
+<h2 id="配置化自适应">配置化自适应</h2>
+<p>参考文件：</p>
+<ol>
+<li>Sigar 教程：https://my.oschina.net/mkh/blog/312911</li>
+<li>万字长文详解 Micrometer：https://juejin.cn/post/7051109463180181535</li>
+<li>Micrometer 使用介绍：https://www.tony-bro.com/posts/1386774700/index.html</li>
+<li>Drools 规则引擎：https://www.cnblogs.com/ityml/p/15993391.html</li>
+</ol>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/w442024-chao-gao-bing-fa-xu-ni-xian-cheng-zai-io-zhong-de-ji-yu/">
+              <h3 class="post-title">
+                下一篇：【W44/2024】超高并发：虚拟线程在 IO 中的机遇
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">知行合一</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
