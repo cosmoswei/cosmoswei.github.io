@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W26/2024】DPDK 与 FPGA  | cosmoswei go</title>
+<meta name="description" content="知行合一">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1733847158062">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1733847158062" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W26/2024】DPDK 与 FPGA </h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2024-06-26</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <h3 id="dpdk基本介绍">DPDK基本介绍</h3>
+<p>你知道 DPDK 吗？它解决了什么问题？它的基本原理是什么？它有什么优缺点？</p>
+<p>DPDK（Data Plane Development Kit）是一个用于高性能数据包处理的开源软件开发工具集。它主要解决了在网络设备（如网络接口卡）中进行数据包处理时所面临的性能瓶颈问题。</p>
+<h4 id="基本原理">基本原理</h4>
+<ol>
+<li>用户态驱动： DPDK 运行在用户态，而非内核态。传统的网络栈通常需要在内核态和用户态之间进行频繁的上下文切换，这对于高性能应用来说是一个瓶颈。DPDK 的用户态驱动能够绕过内核，直接在用户态进行数据包处理，从而提高性能。</li>
+<li>零拷贝： DPDK 支持零拷贝技术，避免了在数据包传递过程中的内存拷贝操作。这通过使用大页（huge pages）技术和内存映射（mmap）来实现，减少了对内存的频繁操作，提高了数据包处理的效率。</li>
+<li>多队列与多核： DPDK 利用多队列和多核的特性，实现并行处理多个数据包。每个队列可以分配给不同的核，从而在多核处理器上实现并行处理，提高整体处理能力。</li>
+</ol>
+<h4 id="优点">优点</h4>
+<ul>
+<li>高性能： DPDK 能够显著提高数据包处理的性能，适用于需要高吞吐量和低延迟的网络应用。</li>
+<li>零拷贝： DPDK 的零拷贝技术避免了数据包传递中的内存拷贝，提高了效率。</li>
+<li>用户态驱动： 绕过内核的用户态驱动消除了内核态和用户态之间的上下文切换开销。</li>
+</ul>
+<h4 id="缺点">缺点</h4>
+<ul>
+<li>专用硬件： DPDK 需要在支持虚拟化扩展（VT-d）的硬件平台上运行，因此对硬件的要求较高。</li>
+<li>复杂性： 使用 DPDK 需要深入理解网络协议栈和硬件细节，可能增加开发和维护的难度。</li>
+<li>非标准： DPDK 不是标准的内核网络协议栈，可能导致应用程序在不同平台上的移植性受到影响。</li>
+</ul>
+<p>总体来说，DPDK 在解决网络数据包处理性能瓶颈方面取得了显著的成果，特别适用于高性能网络应用的场景。</p>
+<h3 id="fpga-基本介绍">FPGA 基本介绍</h3>
+<p>你知道 FPGA 吗？它解决了什么问题？它的基本原理是什么？它有什么优缺点？</p>
+<p>FPGA（Field-Programmable Gate Array）是一种可编程逻辑器件，具有在硬件级别重新配置其内部电路的能力。它主要用于在硬件中实现特定的功能，相对于固定的硬件电路，具有更高的灵活性。</p>
+<h4 id="基本原理-2">基本原理</h4>
+<ol>
+<li>可编程逻辑单元（PLU）： FPGA 包含大量的可编程逻辑单元，这些单元可以通过配置位流进行重新编程。PLU 可以用于实现各种逻辑电路，从简单的逻辑门到复杂的处理器。</li>
+<li>可编程连接： FPGA 中的连接结构是可编程的，可以通过配置来建立不同的信号路径。这使得设计者可以在逻辑单元之间创建灵活的连接，实现特定的电路结构。</li>
+<li>硬性和软性处理器： 一些 FPGA 包含硬性处理器核心，如 ARM Cortex 等，也可以通过配置实现软性处理器。这使得 FPGA 可以用于特定任务的定制处理器设计。</li>
+</ol>
+<h4 id="优点-2">优点</h4>
+<ul>
+<li>灵活性： FPGA 具有极高的灵活性，可以通过重新配置来实现不同的硬件功能，适用于各种应用场景。</li>
+<li>性能： 对于特定任务，FPGA 可以提供与专用硬件电路相媲美的性能，尤其在并行处理方面表现出色。</li>
+<li>可重构性： FPGA 具有可重构性，可以多次使用，并根据需要重新配置，减少硬件设计的成本。</li>
+</ul>
+<h4 id="缺点-2">缺点</h4>
+<ul>
+<li>学习曲线： FPGA 设计通常需要深入了解硬件描述语言（如 Verilog 或 VHDL），因此对于软件开发者来说，学习曲线较陡。</li>
+<li>功耗： 由于可编程逻辑单元和可编程连接的灵活性，一些 FPGA 设备的功耗可能较高，尤其是在实现复杂功能时。</li>
+</ul>
+<p>总体而言，FPGA 是一种强大的硬件设计工具，适用于需要高度定制化和特定硬件功能的应用。它在加速计算、数字信号处理、通信等领域得到广泛应用。</p>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/w262024-suan-zi-andsuo-yin-andwei-ci-xia-tui/">
+              <h3 class="post-title">
+                下一篇：【W26/2024】算子&amp;索引&amp;谓词下推
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">知行合一</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
