@@ -1,0 +1,969 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W44/2024】双端流控：自适应的负载均衡与流量控制 | cosmoswei go</title>
+<meta name="description" content="真言一张纸">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1735924471043">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1735924471043" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W44/2024】双端流控：自适应的负载均衡与流量控制</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2024-11-03</span>
+            
+              <span>
+                <i class="icon-pricetags-outline"></i>
+                
+                  <a href="https://cosmoswei.github.io/NbGSsfmKvb/">
+                    palmx
+                    
+                  </a>
+                
+              </span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <p>前文https://cosmoswei.github.io/w442024-shuang-duan-liu-kong-zi-gua-ying-de-fu-zai-jun-heng-yu-liu-liang-kong-zhi/说到，自适应负载均衡与流控，将 CPU 负载、RT、上线时间通过一个公式来计算一个权重值或阈值，但是这个公式通用型可能不够，服务节点的性能存在差异，因为在不同的机器有不同的硬件资源，比如有些机器是 I/ O 特别强，有比较高的的 IOPS，有些机器有更高的 CPU 频率，CPU处理性能比较高，所以通过一个算法去计算最大并发量，通用性比较低，计算出来的最大并发量可能不够准确，并且这几个的指标并不能完全体现真实的服务节点负载，那么还有那些指标可以更加科学得体现节点负载呢？</p>
+<!-- more -->
+<p>有哪些指标</p>
+<p>Java 程序的负载和状态可以通过多个指标体现，这些指标分为操作系统级别、JVM 级别和应用程序级别。以下是常用指标的分类：</p>
+<p>Java 对象</p>
+<p>系统指标</p>
+<p>public class SystemMetrics {<br>
+/**<br>
+* CPU 核心数<br>
+<em>/<br>
+private int cpuCount;<br>
+/</em>*<br>
+* 最近1分钟的CPU负载<br>
+<em>/<br>
+private double cpuLoad1m;<br>
+/</em>*<br>
+* 最近5分钟的CPU负载<br>
+<em>/<br>
+private double cpuLoad5m;<br>
+/</em>*<br>
+* 最近15分钟的CPU负载<br>
+<em>/<br>
+private double cpuLoad15m;<br>
+/</em>*<br>
+* 当前CPU使用情况（用户、系统等）<br>
+<em>/<br>
+private CpuUsage cpuUsage;<br>
+/</em>*<br>
+* 上下文切换次数<br>
+<em>/<br>
+private double contextSwitches;<br>
+/</em>*<br>
+* 中断次数<br>
+<em>/<br>
+private double interrupts;<br>
+/</em>*<br>
+* 可用内存（单位：字节）<br>
+<em>/<br>
+private double memoryAvailable;<br>
+/</em>*<br>
+* 总内存（单位：字节）<br>
+<em>/<br>
+private double memoryTotal;<br>
+/</em>*<br>
+* 已使用的交换空间（单位：字节）<br>
+<em>/<br>
+private double swapUsed;<br>
+/</em>*<br>
+* 总交换空间（单位：字节）<br>
+<em>/<br>
+private double swapTotal;<br>
+/</em>*<br>
+* 当前进程数量<br>
+<em>/<br>
+private int processCount;<br>
+/</em>*<br>
+* 当前线程数量<br>
+<em>/<br>
+private int threadCount;<br>
+/</em>*<br>
+* 打开的文件描述符数量<br>
+<em>/<br>
+private long openFdCount;<br>
+/</em>*<br>
+* 每秒输入输出操作次数（IOPS）<br>
+<em>/<br>
+private long iops;<br>
+}<br>
+​<br>
+class CpuUsage {<br>
+/</em>*<br>
+* 用户使用率<br>
+<em>/<br>
+private double cpuUsrUsage;<br>
+/</em>*<br>
+* 系统使用率<br>
+<em>/<br>
+private double cpuSysUsage;<br>
+/</em>*<br>
+* 空闲率<br>
+*/<br>
+private double cpuIdle;<br>
+}<br>
+CPU负载（load）与使用率（usage）的区别</p>
+<p>CPU 负载：系统当前的负载，表示正在等待 CPU 的进程数量。通常为 1 分钟、5 分钟、15 分钟的平均值。	负载为 1.0，表示 CPU 核心处于满负载，负载为 2.0，表示任务过多，可能超载。</p>
+<p>CPU 使用率：CPU 正在实际执行任务的时间与总时间的比值。通常以百分比表示。	CPU 使用率为 50%，表示 CPU 空闲时间较多，100% 表示 CPU 完全占用。</p>
+<p>网络指标</p>
+<p>public class NetworkMetrics {<br>
+// 网络性能指标<br>
+/**<br>
+* 网络延迟（单位：毫秒）<br>
+<em>/<br>
+private double latency;<br>
+/</em>*<br>
+* 网络带宽（单位：字节/秒）<br>
+<em>/<br>
+private double bandwidth;<br>
+/</em>*<br>
+* 最大传输单元（MTU，单位：字节）<br>
+<em>/<br>
+private long mtu;<br>
+/</em>*<br>
+* 网络速度（单位：比特/秒）<br>
+<em>/<br>
+private long speed;<br>
+/</em>*<br>
+* 网络接口的MAC地址<br>
+<em>/<br>
+private String macaddr;<br>
+/</em>*<br>
+* IPv4地址数组<br>
+<em>/<br>
+private String[] iPv4addr;<br>
+/</em>*<br>
+* IPv6地址数组<br>
+<em>/<br>
+private String[] iPv6addr;<br>
+/</em>*<br>
+* 是否有网络数据<br>
+<em>/<br>
+private boolean hasData;<br>
+/</em>*<br>
+* 接收的数据包数量<br>
+<em>/<br>
+private long packetsRecv;<br>
+/</em>*<br>
+* 接收的字节数<br>
+<em>/<br>
+private long bytesRecv;<br>
+/</em>*<br>
+* 输入错误的数量<br>
+<em>/<br>
+private long inErrors;<br>
+/</em>*<br>
+* 输出错误的数量<br>
+<em>/<br>
+private long outErrors;<br>
+/</em>*<br>
+* 发送的字节数<br>
+<em>/<br>
+private long bytesSent;<br>
+/</em>*<br>
+* 发送的数据包数量<br>
+*/<br>
+private long packetsSent;<br>
+}<br>
+JVM GC 指标</p>
+<p>public class GcMetrics {<br>
+/**<br>
+* JVM GC 次数<br>
+<em>/<br>
+private int gcCount1m;<br>
+/</em>*<br>
+* JVM GC 吞吐（%）<br>
+<em>/<br>
+private double gcThroughput1m;<br>
+/</em>*<br>
+* JVM 暂停 时间（ms）<br>
+<em>/<br>
+private double gcPauseTime1m;<br>
+/</em>*<br>
+* JVM 内存使用情况<br>
+<em>/<br>
+private double gcMemoryPoolUsage;<br>
+/</em>*<br>
+* JVM堆内存分配速率（MBS）<br>
+<em>/<br>
+private double gcHeapAllocationRate;<br>
+/</em>*<br>
+* JVM堆内存晋升速率（MBS）<br>
+*/<br>
+private double gcHeapPromotedRate;<br>
+}<br>
+JVM 线程指标</p>
+<p>public class ThreadMetrics {<br>
+/**<br>
+* 当前活动线程数量<br>
+<em>/<br>
+private double liveThreads;<br>
+​<br>
+/</em>*<br>
+* 线程峰值数量<br>
+<em>/<br>
+private double peakThreads;<br>
+​<br>
+/</em>*<br>
+* 被阻塞的线程数量<br>
+<em>/<br>
+private double blockedThreads;<br>
+​<br>
+/</em>*<br>
+* 正在运行的线程数量<br>
+<em>/<br>
+private double runnableThreads;<br>
+​<br>
+/</em>*<br>
+* 新创建的线程数量<br>
+<em>/<br>
+private double newThreads;<br>
+​<br>
+/</em>*<br>
+* 正在等待的线程数量（包括休眠、I/O等待等）<br>
+<em>/<br>
+private double timedWaitingThreads;<br>
+​<br>
+/</em>*<br>
+* 已终止的线程数量<br>
+<em>/<br>
+private double terminatedThreads;<br>
+​<br>
+/</em>*<br>
+* 处于等待状态的线程数量（例如：wait、join、lock等）<br>
+*/<br>
+private double waitingThreads;<br>
+}</p>
+<p>获取指标的框架</p>
+<p>有了指标，如何去获取呢？或者说，如何在 Java 进程中获取这些信息？</p>
+<p>JMX</p>
+<p>JDK 提供了多种 MXBean（Managed Bean），它们通过 JMX（Java Management Extensions）接口暴露 JVM 的运行时信息，方便开发者监控和管理 Java 应用程序。以下是主要的 MXBean 及其作用和详细解释：</p>
+<p>MemoryMXBean：提供 JVM 内存使用情况，包括堆内存和非堆内存的管理信息；支持垃圾回收的基本操作。</p>
+<p>GarbageCollectorMXBean：提供 JVM 中垃圾回收器的性能数据。</p>
+<p>ThreadMXBean：提供 JVM 中线程的状态信息和性能数据；支持检测死锁。</p>
+<p>RuntimeMXBean：提供 JVM 的运行时信息。</p>
+<p>OperatingSystemMXBean：提供底层操作系统的相关信息。</p>
+<p>CompilationMXBean：提供 JIT 编译器的相关信息。</p>
+<p>ClassLoadingMXBean：提供 JVM 中类加载器的状态信息。</p>
+<p>MemoryPoolMXBean：提供 JVM 中直接内存的使用信息。</p>
+<p>代码实战如下：</p>
+<p>public class JMXBeanExample {<br>
+public static void main(String[] args) {<br>
+​<br>
+System.out.println(&quot;<mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark>操作系统</mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark>=&quot;);<br>
+OperatingSystemMXBean osMXBean = ManagementFactory.getOperatingSystemMXBean();<br>
+System.out.println(&quot;OS Name: &quot; + osMXBean.getName());<br>
+System.out.println(&quot;OS Architecture: &quot; + osMXBean.getArch());<br>
+System.out.println(&quot;Available Processors: &quot; + osMXBean.getAvailableProcessors());<br>
+System.out.println(&quot;System Load Average: &quot; + osMXBean.getSystemLoadAverage());<br>
+​<br>
+MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();<br>
+​<br>
+System.out.println(&quot;=<mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark>内存</mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark>==&quot;);<br>
+// 堆内存使用情况<br>
+MemoryUsage heapMemoryUsage = memoryMXBean.getHeapMemoryUsage();<br>
+System.out.println(&quot;Heap Memory Used: &quot; + heapMemoryUsage.getUsed());<br>
+System.out.println(&quot;Heap Memory Max: &quot; + heapMemoryUsage.getMax());<br>
+​<br>
+// 非堆内存使用情况<br>
+MemoryUsage nonHeapMemoryUsage = memoryMXBean.getNonHeapMemoryUsage();<br>
+System.out.println(&quot;Non-Heap Memory Used: &quot; + nonHeapMemoryUsage.getUsed());<br>
+System.out.println(&quot;Non-Heap Memory Max: &quot; + nonHeapMemoryUsage.getMax());<br>
+​<br>
+​<br>
+System.out.println(&quot;=<mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark>线程数</mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark>=&quot;);<br>
+ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();<br>
+// 活跃线程数<br>
+System.out.println(&quot;Thread Count: &quot; + threadMXBean.getThreadCount());<br>
+System.out.println(&quot;Daemon Thread Count: &quot; + threadMXBean.getDaemonThreadCount());<br>
+// 获取所有线程信息<br>
+ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(false, false);<br>
+for (ThreadInfo threadInfo : threadInfos) {<br>
+System.out.println(&quot;Thread Name: &quot; + threadInfo.getThreadName());<br>
+System.out.println(&quot;Thread State: &quot; + threadInfo.getThreadState());<br>
+}<br>
+​<br>
+System.out.println(&quot;=<mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark>类加载</mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark>=&quot;);<br>
+ClassLoadingMXBean classLoadingMXBean = ManagementFactory.getClassLoadingMXBean();<br>
+System.out.println(&quot;Loaded Class Count: &quot; + classLoadingMXBean.getLoadedClassCount());<br>
+System.out.println(&quot;Total Loaded Class Count: &quot; + classLoadingMXBean.getTotalLoadedClassCount());<br>
+System.out.println(&quot;Unloaded Class Count: &quot; + classLoadingMXBean.getUnloadedClassCount());<br>
+​<br>
+System.out.println(&quot;<mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark>垃圾回收</mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark>=&quot;);<br>
+List<GarbageCollectorMXBean> gcMXBeans = ManagementFactory.getGarbageCollectorMXBeans();<br>
+System.out.println(&quot;Garbage Collector Details:&quot;);<br>
+for (GarbageCollectorMXBean gcMXBean : gcMXBeans) {<br>
+System.out.println(&quot;- &quot; + gcMXBean.getName() + &quot;: &quot; + gcMXBean.getCollectionCount() + &quot; collections, &quot;<br>
++ gcMXBean.getCollectionTime() + &quot;ms&quot;);<br>
+}<br>
+​<br>
+System.out.println(&quot;<mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark><mark>运行时</mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark></mark>==&quot;);<br>
+RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();<br>
+System.out.println(&quot;runtimeMXBean.getVmName() = &quot; + runtimeMXBean.getVmName());<br>
+System.out.println(&quot;runtimeMXBean.getVmVersion() = &quot; + runtimeMXBean.getVmVersion());<br>
+System.out.println(&quot;runtimeMXBean.getStartTime() = &quot; + runtimeMXBean.getStartTime());<br>
+System.out.println(&quot;runtimeMXBean.getUptime() = &quot; + runtimeMXBean.getUptime());<br>
+}<br>
+}<br>
+Sigar</p>
+<p>Sigar 是一个跨平台的系统性能监控库，可以用来收集操作系统级别的性能指标。它支持多种编程语言，包括 Java、C、Python 和 Perl 等，常用于实时监控系统的运行状态。</p>
+<p>使用 Sigar 的注意事项：</p>
+<p>Sigar  要将 Sigar 的三个运行库（sigar-amd64-winnt.dll，sigar-x86-winnt.dll，sigar-x86-winnt.lib）安装到 JDK 环境的 /bin 目录下，Sigar  官网。</p>
+<p>Sigar 的 JDK 要使用 Oracle 的 openJDK，微软的 Zulu JDK 运行不了。</p>
+<p>Sigar 目前没有适配 Macbook 的 M 系列芯片。</p>
+<p>Sigar 实战：</p>
+<p>public class SigarExample {<br>
+public static void main(String[] args) {<br>
+Runtime r = Runtime.getRuntime();<br>
+Properties props = System.getProperties();<br>
+InetAddress addr = InetAddress.getLocalHost();<br>
+String ip = addr.getHostAddress();<br>
+Map&lt;String, String&gt; map = System.getenv();<br>
+String userName = map.get(&quot;USERNAME&quot;);// 获取用户名<br>
+String computerName = map.get(&quot;COMPUTERNAME&quot;);// 获取计算机名<br>
+String userDomain = map.get(&quot;USERDOMAIN&quot;);// 获取计算机域名<br>
+System.out.println(&quot;用户名:&quot; + userName);<br>
+System.out.println(&quot;本地ip地址:&quot; + ip);<br>
+System.out.println(&quot;本地主机名:&quot; + addr.getHostName());<br>
+System.out.println(&quot;JVM可以使用的总内存:&quot; + r.totalMemory());<br>
+System.out.println(&quot;JVM可以使用的剩余内存:&quot; + r.freeMemory());<br>
+System.out.println(&quot;JVM可以使用的处理器个数:&quot; + r.availableProcessors());<br>
+System.out.println(&quot;Java运行时环境规范版本：&quot; + props.getProperty(&quot;java.specification.version&quot;));<br>
+System.out.println(&quot;Java运行时环境规范供应商：&quot; + props.getProperty(&quot;java.specification.vender&quot;));<br>
+System.out.println(&quot;Java运行时环境规范名称：&quot; + props.getProperty(&quot;java.specification.name&quot;));<br>
+System.out.println(&quot;Java的类格式版本号：&quot; + props.getProperty(&quot;java.class.version&quot;));<br>
+System.out.println(&quot;Java的类路径：&quot; + props.getProperty(&quot;java.class.path&quot;));<br>
+}<br>
+}<br>
+Siigar 可以获取 CPU 主频<br>
+OSHI</p>
+<p>OSHI (Operating System and Hardware Information) 是一个轻量级的、基于 Java 的开源库，用于收集操作系统和硬件的实时性能数据。它是纯 Java 实现的，不依赖 JNI，因此具有跨平台性和易于集成的优点。OSHI 的名称取自其功能：操作系统 (Operating System) 和硬件信息 (Hardware Information)。</p>
+<p>public class OshiExample {<br>
+​<br>
+public static void main(String[] args) {<br>
+SystemInfo si = new SystemInfo();<br>
+HardwareAbstractionLayer hal = si.getHardware();<br>
+OperatingSystem os = printOS(si);<br>
+printNetworkInterfaces(hal.getNetworkIFs());<br>
+}<br>
+​<br>
+private static OperatingSystem printOS(SystemInfo si) {<br>
+OperatingSystem os = si.getOperatingSystem();<br>
+System.out.println(&quot;OS Name: &quot; + os);<br>
+System.out.println(&quot;Boot Time: &quot; + os.getSystemBootTime());<br>
+System.out.println(&quot;Up Time: &quot; + os.getSystemUptime() / 1000 + &quot; s&quot;);<br>
+return os;<br>
+}</p>
+<pre><code>private static void printNetworkInterfaces(List&lt;NetworkIF&gt; list) {
+    for (NetworkIF net : list) {
+        System.out.format(&quot; Name: %s (%s)%n&quot;, net.getName(), net.getDisplayName());
+        System.out.format(&quot;   MAC Address: %s %n&quot;, net.getMacaddr());
+        System.out.format(&quot;   MTU: %s, Speed: %s %n&quot;, net.getMTU(), FormatUtil.formatValue(net.getSpeed(), &quot;bps&quot;));
+        System.out.format(&quot;   IPv4: %s %n&quot;, Arrays.toString(net.getIPv4addr()));
+        System.out.format(&quot;   IPv6: %s %n&quot;, Arrays.toString(net.getIPv6addr()));
+        boolean hasData = net.getBytesRecv() &gt; 0 || net.getBytesSent() &gt; 0 || net.getPacketsRecv() &gt; 0
+                || net.getPacketsSent() &gt; 0;
+        System.out.format(&quot;   Traffic: received %s/%s%s; transmitted %s/%s%s %n&quot;,
+                hasData ? net.getPacketsRecv() + &quot; packets&quot; : &quot;?&quot;,
+                hasData ? FormatUtil.formatBytes(net.getBytesRecv()) : &quot;?&quot;,
+                hasData ? &quot; (&quot; + net.getInErrors() + &quot; err)&quot; : &quot;&quot;,
+                hasData ? net.getPacketsSent() + &quot; packets&quot; : &quot;?&quot;,
+                hasData ? FormatUtil.formatBytes(net.getBytesSent()) : &quot;?&quot;,
+                hasData ? &quot; (&quot; + net.getOutErrors() + &quot; err)&quot; : &quot;&quot;);
+    }
+}
+</code></pre>
+<p>}<br>
+Micrometer</p>
+<p>Micrometer 是一款监控数据采集、输出框架，其将自己称为监控界的 slf4j，提供了监控服务商（如适配监控数据存储的时序数据库或者提供完整解决方案的监控框架）无关的 API 门面。了解到它是因为在项目实践过程中采用了 Spring-actuator 这款监控工具，而其中就使用了 Micrometer。Micrometer 也将与 Spring 良好集成作为宣传点，SpringBoot 相关的监控解决方案从 SpringBoot 2.0 开始全面更改为 Micrometer，不过要知道 Micrometer 与 Spring 属于同门，都是 Pivotal 旗下的产品。Micrometer 这么强大，那么获取指标信息不是轻轻松松？但是网上介绍 Micrometer 大都是如何接入 Prometheus，将收集的服务指标数据发布到 Prometheus 中。或者接入其他监控系统，并没有介绍如何获取系统负载指标。那么，就让本文来介绍如何通过 Micrometer 出来获取指标吧。</p>
+<p>Micrometer 由 Meter、Registry、Meter Filters等核心概念组成，这些内容你可以看这篇文章，本文不做详细介绍。本文主要介绍如何直接使用 Micrometer。</p>
+<p>Micrometer 内置了许多常用的 JVM 和 系统级指标，同时支持自定义指标。以 JvmMemoryMetrics 为例：</p>
+<p>public class MetricsExample {<br>
+public static void main(String[] args) {<br>
+// 创建一个简单的MeterRegistry<br>
+MeterRegistry registry = new SimpleMeterRegistry();<br>
+​<br>
+// 绑定JVM Memory Metrics到Registry<br>
+new JvmMemoryMetrics().bindTo(registry);<br>
+​<br>
+// 查询Eden Space的使用量<br>
+double edenSpaceUsed = registry.get(&quot;jvm.memory.used&quot;)<br>
+.tag(&quot;area&quot;, &quot;heap&quot;)<br>
+.tag(&quot;id&quot;, &quot;PS Eden Space&quot;)<br>
+.gauge()<br>
+.value();<br>
+​<br>
+System.out.println(&quot;Eden Space Used: &quot; + edenSpaceUsed / (1024 * 1024) + &quot; MB&quot;);<br>
+}<br>
+}<br>
+可以直接获取 JVM EdenSpace 已使用的大小。也可以自定义 Metrics，例如可以获取到的 IOPS 数值，绑定到 registry 的 iops 属性上，</p>
+<p>public class IOPSMetrics {<br>
+​<br>
+public static void main(String[] args) {<br>
+MeterRegistry registry = new SimpleMeterRegistry();<br>
+IOPSMetrics iopsMetrics = new IOPSMetrics(registry);<br>
+iopsMetrics.recordIOPS();<br>
+System.out.println(&quot;iops = &quot;<br>
++ registry.get(&quot;disk.iops&quot;).counter().count());<br>
+}<br>
+​<br>
+private final Counter counter;<br>
+private final HardwareAbstractionLayer hal;<br>
+​<br>
+public IOPSMetrics(MeterRegistry registry) {<br>
+SystemInfo systemInfo = new SystemInfo();<br>
+hal = systemInfo.getHardware();<br>
+this.counter = Counter.builder(&quot;disk.iops&quot;)<br>
+.description(&quot;IOPS (Input/Output Operations Per Second)&quot;)<br>
+.register(registry);<br>
+}<br>
+​<br>
+public void recordIOPS() {<br>
+Map&lt;String, Map&lt;String, Long&gt;&gt; IOPSMap = new ConcurrentHashMap&lt;&gt;();<br>
+for (HWDiskStore hwDiskStore : hal.getDiskStores()) {<br>
+String name = hwDiskStore.getName();<br>
+long readsBefore = hwDiskStore.getReads();<br>
+long writesBefore = hwDiskStore.getWrites();<br>
+Map&lt;String, Long&gt; beforeMap = new HashMap&lt;&gt;();<br>
+beforeMap.put(&quot;readsBefore&quot;, readsBefore);<br>
+beforeMap.put(&quot;writesBefore&quot;, writesBefore);<br>
+IOPSMap.put(name, beforeMap);<br>
+}<br>
+​<br>
+try {<br>
+TimeUnit.SECONDS.sleep(1); // 1秒内的IOPS<br>
+} catch (InterruptedException e) {<br>
+e.printStackTrace();<br>
+}<br>
+​<br>
+for (HWDiskStore hwDiskStore : hal.getDiskStores()) {<br>
+String name = hwDiskStore.getName();<br>
+Map&lt;String, Long&gt; afterMap = IOPSMap.get(name);<br>
+long readsAfter = hwDiskStore.getReads();<br>
+long writesAfter = hwDiskStore.getWrites();<br>
+afterMap.put(&quot;readsAfter&quot;, readsAfter);<br>
+afterMap.put(&quot;writesAfter&quot;, writesAfter);<br>
+}<br>
+long iops = 0;<br>
+for (Map.Entry&lt;String, Map&lt;String, Long&gt;&gt; stringMapEntry : IOPSMap.entrySet()) {<br>
+String name = stringMapEntry.getKey();<br>
+Map&lt;String, Long&gt; value = stringMapEntry.getValue();<br>
+Long readsBefore = value.get(&quot;readsBefore&quot;);<br>
+Long writesBefore = value.get(&quot;writesBefore&quot;);<br>
+Long readsAfter = value.get(&quot;readsAfter&quot;);<br>
+Long writesAfter = value.get(&quot;writesAfter&quot;);<br>
+iops += (readsAfter - readsBefore) + (writesAfter - writesBefore);<br>
+}<br>
+counter.increment(iops); // 记录次数<br>
+}<br>
+}<br>
+​<br>
+Micrometer 并不会去获取指标，更像是对获取指标的去做了一层封装，将系统获取指标的能力做了一层收口。统一交给调用方使用，有点像日志库（log4j）与日志门面（slf4j）的关系。如下图（图源《码出高效#p150》）：</p>
+<p>门面设计模式是面向对象设计模式中的一种，日志框架采用的就是这种模式，它只提供一套接口规范，自身不负责日志功能的实现，目的是让使用者不需要关注细节。使用最广泛的日志门面是 slf4j。日志库具体实现了日志的相关功能，主流的日志库有 log4j、logback。开发者在使用时需要关注所使用的日志库的具体细节。logback 是 log4j 的升级版，且本身就实现了slf4j 的接口。<br>
+Micrometer 可以看作是监控指标的门面，JMX 可以看作其中一个日志库。Micrometer 官方也实现了一些 日志适配器，可以直接使用指标，比如 JvmMemoryMetrics，我们也可以自定义一些 Metrics，比如上面的 CustomCounter，再交给 Micrometer 这个“监控门面”统一管理。</p>
+<p>可以看到，Micrometer 并不生产指标，它是指标的搬运工。比如要获取 GC 的暂停信息，在 Micrometer 的 io.micrometer.core.instrument.binder.jvm.JvmGcMetrics.GcMetricsNotificationListener#handleNotification 方法处，有获取 GC 信息的代码：</p>
+<p>public void handleNotification(Notification notification, Object ref) {<br>
+CompositeData cd = (CompositeData)notification.getUserData();<br>
+GarbageCollectionNotificationInfo notificationInfo = GarbageCollectionNotificationInfo.from(cd);<br>
+String gcCause = notificationInfo.getGcCause();<br>
+String gcAction = notificationInfo.getGcAction();<br>
+GcInfo gcInfo = notificationInfo.getGcInfo();<br>
+long duration = gcInfo.getDuration();<br>
+if (JvmMemory.isConcurrentPhase(gcCause, notificationInfo.getGcName())) {<br>
+Timer.builder(&quot;jvm.gc.concurrent.phase.time&quot;).tags(JvmGcMetrics.this.tags).tags(new String[]{&quot;action&quot;, gcAction, &quot;cause&quot;, gcCause}).description(&quot;Time spent in concurrent phase&quot;).register(this.registry).record(duration, TimeUnit.MILLISECONDS);<br>
+} else {<br>
+Timer.builder(&quot;jvm.gc.pause&quot;).tags(JvmGcMetrics.this.tags).tags(new String[]{&quot;action&quot;, gcAction, &quot;cause&quot;, gcCause}).description(&quot;Time spent in GC pause&quot;).register(this.registry).record(duration, TimeUnit.MILLISECONDS);<br>
+}}<br>
+从 GarbageCollectionNotificationInfo 获取 GC 信息。如果想要获取 GC 信息，可以从中借鉴，有如下实现：</p>
+<p>public class NotificationExample {<br>
+public static void main(String[] args) throws InterruptedException {<br>
+for (GarbageCollectorMXBean gcBean : ManagementFactory.getGarbageCollectorMXBeans()) {<br>
+System.out.println(gcBean.getName());<br>
+NotificationEmitter emitter = (NotificationEmitter) gcBean;<br>
+NotificationListener notificationListener = new NotificationListener() {<br>
+@Override<br>
+public void handleNotification(Notification notification, Object handback) {<br>
+if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {<br>
+GarbageCollectionNotificationInfo from = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());<br>
+GcInfo gcInfo = from.getGcInfo();<br>
+String gcName = from.getGcName();<br>
+String gcCause = from.getGcCause();<br>
+String gcType = from.getGcAction();<br>
+long duration = gcInfo.getDuration();<br>
+long startTime = gcInfo.getStartTime();<br>
+long endTime = gcInfo.getEndTime();<br>
+System.out.println(&quot;gcName: &quot; + gcName +<br>
+&quot; gcCause: [&quot; + gcCause +<br>
+&quot;] gcType: [&quot; + gcType +<br>
+&quot;] duration: &quot; + duration +<br>
+&quot; ms startTime: &quot; + startTime +<br>
+&quot; endTime: &quot; + endTime);<br>
+}<br>
+}<br>
+};<br>
+​<br>
+emitter.addNotificationListener(notificationListener, null, null);<br>
+}<br>
+for (int i = 1; i &lt; 20000000; i++) {<br>
+byte[] bytes = new byte[1024];<br>
+if (i % 2 == 0) {<br>
+bytes = null;<br>
+}<br>
+}<br>
+TimeUnit.MILLISECONDS.sleep(4000);<br>
+}<br>
+}<br>
+就可以获取 GC 暂停信息了。</p>
+<p>获取指标实践</p>
+<p>综合评估，还是使用 OSHI 最合适获取系统指标，它有完善的查询接口，单有些数据无法获取时，使用 JMX 补充一些信息。比如 OSHI 无法获取 GC 信息，可以从 JMX 的 GarbageCollectionNotificationInfo 中获取。</p>
+<p>CPU</p>
+<p>首先是获取 CPU 信息，OSHI 可以获取 CPU 三段（1，5，15 min）的负载（load）与使用率（usage）。</p>
+<p>CPU 负载</p>
+<p>// CPU<br>
+int cpuCount = processor.getLogicalProcessorCount();<br>
+systemMetrics.setCpuCount(cpuCount);<br>
+double[] loadAverage = processor.getSystemLoadAverage(3);<br>
+systemMetrics.setCpuLoad1m(NumberTool.round(loadAverage[0] &lt; 0 ? 0 : loadAverage[0], 2));<br>
+systemMetrics.setCpuLoad5m(NumberTool.round(loadAverage[1] &lt; 0 ? 0 : loadAverage[1], 2));<br>
+systemMetrics.setCpuLoad15m(NumberTool.round(loadAverage[2] &lt; 0 ? 0 : loadAverage[2], 2));<br>
+systemMetrics.setContextSwitches(processor.getContextSwitches());<br>
+systemMetrics.setInterrupts(processor.getInterrupts());<br>
+CpuUsage cpuUsage = getCpuUsage();<br>
+systemMetrics.setCpuUsage(cpuUsage);<br>
+CPU 使用率</p>
+<p>private static CpuUsage getCpuUsage(CentralProcessor processor) {<br>
+long[] prevTicks = processor.getSystemCpuLoadTicks();<br>
+// Wait a second<br>
+Util.sleep(1000);<br>
+long[] ticks = processor.getSystemCpuLoadTicks();<br>
+long user = ticks[CentralProcessor.TickType.USER.getIndex()] - prevTicks[CentralProcessor.TickType.USER.getIndex()];<br>
+long nice = ticks[CentralProcessor.TickType.NICE.getIndex()] - prevTicks[CentralProcessor.TickType.NICE.getIndex()];<br>
+long sys = ticks[CentralProcessor.TickType.SYSTEM.getIndex()] - prevTicks[CentralProcessor.TickType.SYSTEM.getIndex()];<br>
+long idle = ticks[CentralProcessor.TickType.IDLE.getIndex()] - prevTicks[CentralProcessor.TickType.IDLE.getIndex()];<br>
+long iowait = ticks[CentralProcessor.TickType.IOWAIT.getIndex()] - prevTicks[CentralProcessor.TickType.IOWAIT.getIndex()];<br>
+long irq = ticks[CentralProcessor.TickType.IRQ.getIndex()] - prevTicks[CentralProcessor.TickType.IRQ.getIndex()];<br>
+long softirq = ticks[CentralProcessor.TickType.SOFTIRQ.getIndex()] - prevTicks[CentralProcessor.TickType.SOFTIRQ.getIndex()];<br>
+long steal = ticks[CentralProcessor.TickType.STEAL.getIndex()] - prevTicks[CentralProcessor.TickType.STEAL.getIndex()];<br>
+long totalCpu = user + nice + sys + idle + iowait + irq + softirq + steal;<br>
+CpuUsage cpuUsage = new CpuUsage();<br>
+cpuUsage.setCpuUsrUsage(NumberTool.div(100 * user, totalCpu, 2));<br>
+cpuUsage.setCpuSysUsage(NumberTool.div(100 * sys, totalCpu, 2));<br>
+cpuUsage.setCpuIdle(NumberTool.div(100 * idle, totalCpu, 2));<br>
+return cpuUsage;<br>
+}</p>
+<p>内存</p>
+<p>OSHI 可以获取系统的内存与线程指标，代码如下：</p>
+<p>// 内存<br>
+GlobalMemory memory = HAL.getMemory();<br>
+systemMetrics.setMemoryTotal(NumberTool.round((double) memory.getTotal() / MB, 2));<br>
+systemMetrics.setMemoryAvailable(NumberTool.round((double) memory.getAvailable() / MB, 2));<br>
+long swapUsed = memory.getVirtualMemory().getSwapUsed();<br>
+long swapTotal = memory.getVirtualMemory().getSwapTotal();<br>
+systemMetrics.setSwapUsed(NumberTool.round((double) swapUsed / MB, 2));<br>
+systemMetrics.setSwapTotal(NumberTool.round((double) swapTotal / MB, 2));<br>
+​<br>
+// 线程<br>
+systemMetrics.setProcessCount(OS.getProcessCount());<br>
+systemMetrics.setThreadCount(OS.getThreadCount());<br>
+FileSystem fileSystem = OS.getFileSystem();</p>
+<p>磁盘</p>
+<p>OSHI 可以获取系统的文件描述符指标，代码如下：</p>
+<p>// 文件描述符<br>
+systemMetrics.setOpenFdCount(fileSystem.getOpenFileDescriptors());<br>
+systemMetrics.setIops(getIops1s());<br>
+IOPS 无法直接获取 IOPS，需要使用 JMX 的 HWDiskStore 先记录读写次数，在获取一秒后的读写次数，相减就可以获取IOPS了，代码如下：</p>
+<p>private static long getIops() {<br>
+Map&lt;String, Map&lt;String, Long&gt;&gt; IOPSMap = new ConcurrentHashMap&lt;&gt;();<br>
+for (HWDiskStore hwDiskStore : HAL.getDiskStores()) {<br>
+String name = hwDiskStore.getName();<br>
+long readsBefore = hwDiskStore.getReads();<br>
+long writesBefore = hwDiskStore.getWrites();<br>
+Map&lt;String, Long&gt; beforeMap = new HashMap&lt;&gt;();<br>
+beforeMap.put(&quot;readsBefore&quot;, readsBefore);<br>
+beforeMap.put(&quot;writesBefore&quot;, writesBefore);<br>
+IOPSMap.put(name, beforeMap);<br>
+}<br>
+​<br>
+// 记录一秒的读写差<br>
+Util.sleep(1000);<br>
+​<br>
+for (HWDiskStore hwDiskStore : HAL.getDiskStores()) {<br>
+String name = hwDiskStore.getName();<br>
+Map&lt;String, Long&gt; afterMap = IOPSMap.get(name);<br>
+long readsAfter = hwDiskStore.getReads();<br>
+long writesAfter = hwDiskStore.getWrites();<br>
+afterMap.put(&quot;readsAfter&quot;, readsAfter);<br>
+afterMap.put(&quot;writesAfter&quot;, writesAfter);<br>
+}<br>
+long iops = 0;<br>
+for (Map.Entry&lt;String, Map&lt;String, Long&gt;&gt; stringMapEntry : IOPSMap.entrySet()) {<br>
+Map&lt;String, Long&gt; value = stringMapEntry.getValue();<br>
+Long readsBefore = value.get(&quot;readsBefore&quot;);<br>
+Long writesBefore = value.get(&quot;writesBefore&quot;);<br>
+Long readsAfter = value.get(&quot;readsAfter&quot;);<br>
+Long writesAfter = value.get(&quot;writesAfter&quot;);<br>
+iops += (readsAfter - readsBefore) + (writesAfter - writesBefore);<br>
+}<br>
+return iops;<br>
+}</p>
+<p>网络</p>
+<p>OSHI 可以获取系统的网络指标，代码如下：</p>
+<p>public static NetworkMetrics getNetworkMetrics() {<br>
+NetworkMetrics networkMetrics = new NetworkMetrics();<br>
+networkMetrics.setLatency(0.0D);<br>
+networkMetrics.setBandwidth(0.0D);<br>
+for (NetworkIF net : HAL.getNetworkIFs()) {<br>
+// 过滤虚拟网卡<br>
+if (null == net.getIPv4addr()<br>
+|| net.getIPv4addr().length == 0<br>
+|| null == net.getIPv6addr()<br>
+|| net.getIPv6addr().length == 0) {<br>
+continue;<br>
+}<br>
+networkMetrics.setMtu(net.getMTU());<br>
+networkMetrics.setSpeed(net.getSpeed());<br>
+networkMetrics.setMacaddr(net.getMacaddr());<br>
+networkMetrics.setIPv4addr(net.getIPv4addr());<br>
+networkMetrics.setIPv6addr(net.getIPv6addr());<br>
+boolean hasData = net.getBytesRecv() &gt; 0 || net.getBytesSent() &gt; 0 || net.getPacketsRecv() &gt; 0<br>
+|| net.getPacketsSent() &gt; 0;<br>
+networkMetrics.setHasData(hasData);<br>
+networkMetrics.setBytesRecv(net.getBytesRecv());<br>
+networkMetrics.setBytesSent(net.getBytesSent());<br>
+networkMetrics.setPacketsRecv(net.getPacketsRecv());<br>
+networkMetrics.setPacketsSent(net.getPacketsSent());<br>
+networkMetrics.setInErrors(net.getInErrors());<br>
+networkMetrics.setOutErrors(net.getOutErrors());<br>
+}<br>
+return networkMetrics;<br>
+}</p>
+<p>JVM</p>
+<p>OSHI 可以获取系统的 GC 指标，代码如下：</p>
+<p>public static GcMetrics getGcMetrics() {<br>
+GcMetrics gcMetrics = new GcMetrics();<br>
+gcMetrics.setGcPauseTime1m(NumberTool.round(getGcPauseTime1m(), 2));<br>
+gcMetrics.setGcThroughput1m(NumberTool.round(getGcThroughput1m(), 2));<br>
+gcMetrics.setGcCount1m(gcCount);<br>
+gcMetrics.setGcMemoryPoolUsage(0.0D);<br>
+gcMetrics.setGcHeapAllocationRate(NumberTool.round(getAllocationRate(REGISTRY), 2));<br>
+gcMetrics.setGcHeapPromotedRate(NumberTool.round(getPromotedRate(REGISTRY), 2));<br>
+return gcMetrics;<br>
+}<br>
+​<br>
+private static double getAllocationRate(MeterRegistry registry) {<br>
+double memoryAllocated = registry.get(&quot;jvm.gc.memory.allocated&quot;).counter().count();<br>
+return memoryAllocated / 1024 / 1024;<br>
+}<br>
+​<br>
+private static double getPromotedRate(MeterRegistry registry) {<br>
+double memoryPromoted = registry.get(&quot;jvm.gc.memory.promoted&quot;).counter().count();<br>
+return memoryPromoted / 1024 / 1024;<br>
+}<br>
+GC 的暂停时间与吞吐要使用 GarbageCollectionNotificationInfo 获取，在计算出1分钟的平均暂停时间与孕吐，代码如下：</p>
+<p>/**</p>
+<ul>
+<li>GC 最后更新时间<br>
+<em>/<br>
+private static long gcLastTime = 0;<br>
+/</em>*</li>
+<li>GC 次数<br>
+<em>/<br>
+private static int gcCount = 0;<br>
+/</em>*</li>
+<li>GC 计时 Map &lt;time,avgLatency&gt;<br>
+*/<br>
+static Map&lt;Long, Long&gt; gcTimeMap = new ConcurrentHashMap&lt;&gt;();<br>
+​<br>
+public static void init() {<br>
+​<br>
+EXECUTOR_SERVICE.submit(() -&gt; {<br>
+for (GarbageCollectorMXBean gcBean : ManagementFactory.getGarbageCollectorMXBeans()) {<br>
+NotificationEmitter emitter = (NotificationEmitter) gcBean;<br>
+NotificationListener notificationListener = (notification, handback) -&gt; {<br>
+if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {<br>
+GarbageCollectionNotificationInfo from = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());<br>
+GcInfo gcInfo = from.getGcInfo();<br>
+long duration = gcInfo.getDuration();<br>
+log.debug(&quot;{} GC duration: {}&quot;, from.getGcName(), duration);<br>
+gcLastTime = System.currentTimeMillis();<br>
+gcTimeMap.put(gcLastTime, duration);<br>
+}<br>
+};<br>
+emitter.addNotificationListener(notificationListener, null, null);<br>
+}<br>
+});<br>
+}<br>
+​<br>
+private static double getGcPauseTime1m() {<br>
+long now = System.currentTimeMillis();<br>
+gcTimeMap.entrySet().removeIf((k) -&gt; k.getKey() &lt; now - MINUTE);<br>
+// 去掉一分钟以前的<br>
+gcCount = gcTimeMap.size();<br>
+OptionalDouble average = gcTimeMap.values().stream().mapToLong(l -&gt; l).average();<br>
+return average.orElse(0.0D);<br>
+}<br>
+​<br>
+private static double getGcThroughput1m() {<br>
+long now = System.currentTimeMillis();<br>
+// 去掉一分钟以前的<br>
+gcTimeMap.entrySet().removeIf((k) -&gt; k.getKey() &lt; now - MINUTE);<br>
+gcCount = gcTimeMap.size();<br>
+long sum = gcTimeMap.values().stream().mapToLong(l -&gt; l).sum();<br>
+return NumberTool.div(60 * 1000 - sum, 60 * 1000, 4) * 100;<br>
+}<br>
+OSHI 可以获取系统的线程指标，代码如下：</li>
+</ul>
+<p>public static ThreadMetrics getThreadMetrics() {<br>
+ThreadMetrics threadMetrics = new ThreadMetrics();<br>
+double liveThreads = REGISTRY.get(&quot;jvm.threads.live&quot;).gauge().value();<br>
+threadMetrics.setLiveThreads(liveThreads);<br>
+double peakThreads = REGISTRY.get(&quot;jvm.threads.peak&quot;).gauge().value();<br>
+threadMetrics.setPeakThreads(peakThreads);<br>
+double blockedThreads = REGISTRY.get(&quot;jvm.threads.states&quot;).tag(&quot;state&quot;, &quot;blocked&quot;).gauge().value();<br>
+threadMetrics.setBlockedThreads(blockedThreads);<br>
+double runnableThreads = REGISTRY.get(&quot;jvm.threads.states&quot;).tag(&quot;state&quot;, &quot;runnable&quot;).gauge().value();<br>
+threadMetrics.setRunnableThreads(runnableThreads);<br>
+double newThreads = REGISTRY.get(&quot;jvm.threads.states&quot;).tag(&quot;state&quot;, &quot;new&quot;).gauge().value();<br>
+threadMetrics.setNewThreads(newThreads);<br>
+double timedWaitingThreads = REGISTRY.get(&quot;jvm.threads.states&quot;).tag(&quot;state&quot;, &quot;timed-waiting&quot;).gauge().value();<br>
+threadMetrics.setTimedWaitingThreads(timedWaitingThreads);<br>
+double terminatedThreads = REGISTRY.get(&quot;jvm.threads.states&quot;).tag(&quot;state&quot;, &quot;terminated&quot;).gauge().value();<br>
+threadMetrics.setTerminatedThreads(terminatedThreads);<br>
+double waitingThreads = REGISTRY.get(&quot;jvm.threads.states&quot;).tag(&quot;state&quot;, &quot;waiting&quot;).gauge().value();<br>
+threadMetrics.setWaitingThreads(waitingThreads);<br>
+return threadMetrics;<br>
+}<br>
+代码见：https://github.com/cosmoswei/hextech/blob/main/src/main/java/com/wei/metrics/PerformanceQueryUtils.java</p>
+<p>如何让计算负载</p>
+<p>有了上述的系统指标，我们可以获取系统的负载和状态。但是，面对这么多的指标，如何更加科学地体现系统的负载呢？首先，我想到的是通过公式来计算一个负载值，将 CPU 负载、RT、上线时间等因素通过公式加权计算出一个权重值或阈值，用来反映系统的负载。例如，Dubbo 在计算负载时使用了指数加权平均（EWMA）算法，这可以帮助估计变量的局部均值，使得变量的更新不仅依赖当前值，还与一段时间内的历史数据有关。可以参考这篇文章。</p>
+<p>然而，单一的公式可能无法适应所有情况，尤其是在服务节点的性能存在差异时。在不同的机器上，硬件资源各不相同，比如一些机器的 I/O 性能特别强，具备较高的 IOPS（每秒输入输出操作次数），而另一些机器的 CPU 性能更强，具有更高的处理能力。因此，通过单一算法计算最大并发量的通用性可能较低，计算出来的最大并发量也可能不够准确。而且，现有的这些指标并不能完全体现服务节点的真实负载。那么，还有哪些指标可以更加科学地反映节点负载呢？</p>
+<p>我想通过配置化的方式来计算服务器的最大并发量，通过提取一些性能指标，比如 CPU 使用率、网络延迟、线程数等，组合成一个可配置的公式，从而得出服务器的最大并发量。我认为这是一个可行的方案，但问题是，如何进行配置呢？</p>
+<p>引入规则引擎</p>
+<p>我的想法是，借助一个评分体系来评估系统的最大并发量。如果系统的最大并发量较高，则其得分也会相应较高，反之亦然。根据这个得分，我们可以推算出机器的最大并发量。这个评分该如何得出呢？</p>
+<p>电商风控</p>
+<p>在电商业务中，有一种技术叫做“风控”，它根据用户的一些属性（如用户ID、设备指纹、购买频次等），给用户评定一个风控分数，进而判断这次交易是否存在风险。这种做法能够帮助电商平台降低运营中的风险，保障交易的安全。</p>
+<p>这一思路与我们的需求非常相似：把服务器看作“用户”，而服务器的最大并发量就可以看作“风控评分”。至于计算最大并发量的算法，则可以看作“风控规则”。通过这样的方式，我们可以在开发过程中配置具体的计算算法，最终得到一个代表服务器最大并发量的评分。通过这个分数，我们就能更科学地估算服务器的真实负载能力。风控的核心是利用规则引擎，根据用户的操作行为或属性计算出用户的风控分数，而这些规则是可以由运营团队配置的。那么规则引擎又是什么？跟主题配置驱动有什么关系？接着往下看。</p>
+<p>规则引擎</p>
+<p>规则引擎由推理引擎发展而来，是一种嵌入在应用程序中的组件，实现了将业务决策从应用程序代码中分离出来，并使用预定义的语义模块编写业务决策。接受数据输入，解释业务规则，并根据业务规则做出业务决策，需要注意的是规则引擎并不是一个具体的技术框架，而是指的一类系统，即业务规则管理系统。目前规则引擎产品有：drools、VisualRules、iLog。有关规则引擎，可以看这篇文章。</p>
+<p>服务质量（QoS）</p>
+<p>QoS（Quality of Service）即服务质量。在有限的带宽资源下，QoS为各种业务分配带宽，为业务提供端到端的服务质量保证。例如，语音、视频和重要的数据应用在网络设备中可以通过配置QoS优先得到服务。<br>
+QoS 本来是通信领域中，用在交换机的技术，我们借用它的名字，服务质量评分作为的评价体系的结果。</p>
+<p>public class QoS {<br>
+/**<br>
+* QoS 等级，体现的是服务质量的分数<br>
+* 值域 = 1-100<br>
+* 默认值 = 100<br>
+*/<br>
+private int qoSLevel = 100;<br>
+}</p>
+<p>配置化指标实战</p>
+<p>Step1：引入 drools 的 pom</p>
+<!-- 规则引擎  -->
+<dependency>
+  <groupId>org.drools</groupId>
+  <artifactId>drools-core</artifactId>
+  <version>7.59.0.Final</version>
+</dependency>
+<dependency>
+  <groupId>org.drools</groupId>
+  <artifactId>drools-decisiontables</artifactId>
+  <version>7.59.0.Final</version>
+</dependency>
+Step2：获取服务器的指标
+<p>public static Metrics getMetrics0() {<br>
+if (registry == null) {<br>
+initMeterRegistry();<br>
+}<br>
+Metrics metrics = new Metrics();<br>
+MetricsUtils metricsUtils = new MetricsUtils(registry);<br>
+metrics.setSystemMetrics(metricsUtils.getSystemMetrics());<br>
+metrics.setNetworkMetrics(metricsUtils.getNetworkMetrics());<br>
+metrics.setJvmMetrics(metricsUtils.getJvmMetrics());<br>
+return metrics;<br>
+}<br>
+Step3：规则文件</p>
+<p>dialect &quot;java&quot;<br>
+rule &quot;defaultRule&quot;<br>
+​<br>
+when<br>
+// 如果阻塞线程的数量大于10<br>
+Metrics(jvmMetrics.getBlockedThreads() &lt; 10)<br>
+then<br>
+// 则将QoS等级设为10<br>
+qoS.setQoSLevel(201);<br>
+​<br>
+end<br>
+​<br>
+rule &quot;bottomRule&quot;<br>
+when<br>
+then<br>
+// 如果QoS大于100，则将QoS等级设为100<br>
+if (qoS.getQoSLevel() &gt; 100){<br>
+qoS.setQoSLevel(100);<br>
+}<br>
+end<br>
+Step4：执行规则引擎</p>
+<p>public QoS getQoS(Metrics metrics) {<br>
+QoS qoS = new QoS();<br>
+​<br>
+// 规则文件<br>
+String metricQoSRulePath = PalmxConfig.getMetricQoSRulePath();<br>
+​<br>
+KieSession kieSession = getKieSession(metricQoSRulePath);<br>
+​<br>
+kieSession.setGlobal(&quot;qoS&quot;, qoS);<br>
+// 插入数据到 KieSession<br>
+kieSession.insert(metrics);<br>
+// 触发规则执行<br>
+kieSession.fireAllRules();<br>
+// 关闭 KieSession<br>
+kieSession.dispose();<br>
+return qoS;<br>
+}<br>
+Step5：根据QoS进行限流。</p>
+<p>/**</p>
+<ul>
+<li>自适应控制，通过获取服务质量等级 QoS 来限制流量的百分比<br>
+*/<br>
+private void adaptiveControl() {<br>
+if (PalmxConfig.getAdaptiveFlowControlEnable()) {<br>
+int localQoSLevel = QoSHandler.getLocalQoSLevelFromCache(&quot;FLOW_CONTROL&quot;);<br>
+if (localQoSLevel &lt;= 0) {<br>
+this.qps = 0;<br>
+}<br>
+this.qps = (this.qps / localQoSLevel) * 100;<br>
+}<br>
+}<br>
+Step6：启动效果</li>
+</ul>
+<p>2024-12-23 23:21:25.271  INFO --- [pool-7-thread-1] me.xuqu.palmx.qos.QoSHandler             : get local qos level is 40<br>
+2024-12-23 23:21:25.271  INFO --- [pool-7-thread-1] me.xuqu.palmx.registry.ZookeeperUpdater  : 正在更新当前主机的节点信息 当前服务 service = me.wei.service.DemoService<br>
+2024-12-23 23:21:25.291  INFO --- [pool-7-thread-1] me.xuqu.palmx.registry.ZookeeperUpdater  : 正在更新当前主机的节点信息 当前服务 service = me.wei.service.TestService<br>
+详细代码可以参考：https://github.com/cosmoswei/palmx/tree/README.md/v1.0/src/main/java/me/xuqu/palmx/qos</p>
+<p>参考文章</p>
+<p>Sigar 教程：https://my.oschina.net/mkh/blog/312911</p>
+<p>万字长文详解 Micrometer：https://juejin.cn/post/7051109463180181535</p>
+<p>Micrometer 使用介绍：https://www.tony-bro.com/posts/1386774700/index.html</p>
+<p>Drools 规则引擎：https://www.cnblogs.com/ityml/p/15993391.html</p>
+<p>Dubbo 框架标准监控指标：https://cn.dubbo.apache.org/zh-cn/overview/reference/metrics/standard_metrics/</p>
+<p>Drools 规则引擎应用 看这一篇就够了：https://www.cnblogs.com/ityml/p/15993391.html</p>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/rule-engine/">
+              <h3 class="post-title">
+                下一篇：【W44/2024】配置驱动：灵活的配置指标与评分体系
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">真言一张纸</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>

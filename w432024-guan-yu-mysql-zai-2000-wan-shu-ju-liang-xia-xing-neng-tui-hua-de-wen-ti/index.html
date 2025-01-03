@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W43/2024】关于 MySQL 在 2000 万数据量下性能退化的问题 | cosmoswei go</title>
+<meta name="description" content="真言一张纸">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1735924471043">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1735924471043" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W43/2024】关于 MySQL 在 2000 万数据量下性能退化的问题</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2024-10-26</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <h2 id="现象">现象</h2>
+<p>坊间流传 ，MySQL 每张表最好不要超过 2000 万条数据，否则就会导致性能下降，如下图（<a href="https://my.oschina.net/u/4090830/blog/5559454">图源</a>）。</p>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202410251722366.png" alt="" loading="lazy"></figure>
+<p>图片内容的详细数据与测试环境可以从上图的链接查看，但是可以得出结论的是，数据量在大于2000 万时，性能出现了明显的下降。</p>
+<h2 id="传言">传言</h2>
+<p>关于这个问题，有一个流传比较广泛的答案，那就是 MySQL 索引的数据结构--- B+ 树，多查找一层数据，就多进行一次磁盘 IO，一般来说，当一行的数据大小为 1kb 时，一棵3层的 B+ 树可以存放 2000 万行数据，当数据大于这个阈值时，3 层 B+ 树变成 4 层 B+ 数，多的这次 IO 会时造成性能衰退的主要原因。</p>
+<h2 id="原因">原因</h2>
+<p>但是，真的是这样吗？我有下面几个猜想。</p>
+<h5 id="猜想1磁盘io增加了耗时吗">猜想1：磁盘IO增加了耗时吗？</h5>
+<p>多进行一次磁盘 IO，增加查询的时延，这是天经地义的，但是由 3 次 IO 变为 4 次 IO，只增加了 1/3 的查询时间，但是在上面的结果显示，到了 2000 万这个节点时，查询时间大幅增加，完全不像是只增加了1/3，这是一个不合理的点。</p>
+<p>并且如今的硬盘技术已经快速发展了，之前机械硬盘的IOPS在100左右，而现在普遍使用的SSD的IOPS已经过万，多一次磁盘 IO 对整体的性能影响会这么大吗？</p>
+<h5 id="猜想2是smo无法并发吗">猜想2：是SMO无法并发吗？</h5>
+<p>关于这个猜想，你可以看看这篇<a href="https://mp.weixin.qq.com/s/KvS4apBqfd2IBri4lxUKPA">文章</a>，里面提到了在进行数据修改时，如果对索引树结构进行调整，会触发索引树的SMO操作，导致读取性能也会降低。InnoDB 对于简单的主键查询比较快，因为数据都存储在叶子节点中，但对于数据量大且改操作比较多的 TP 型业务，并发会有很严重的瓶颈问题。</p>
+<p>数据量大时，大量的修改操作可能会促发大量的 SMO 操作，导致性能变低，这也可能是 2000 万行数据瓶颈问题的原因，但是相关测试表明，没有并发的 SMO 操作，仅查询操作，在数据量达到 2000 万是也会发生明显的性能退化。</p>
+<h5 id="猜想3是-buffer-poll-命中率低吗">猜想3：是 buffer poll 命中率低吗？</h5>
+<p>在 InnoDB 中，缓冲池是用来缓存数据和索引的地方，这可以大大减少磁盘 IO 操作，从而提高数据库性能。为了监控和调优 InnoDB 的缓存性能，我们可以关注两个重要的性能指标：innodb_buffer_pool_reads和innodb_buffer_pool_read_requests。</p>
+<ol>
+<li>
+<p>innodb_buffer_pool_read：是一个计数器，它记录了InnoDB在缓冲池中找不到请求的数据或索引时，需要从磁盘读取的次数。这是一个非常重要的性能指标，因为它直接反映了缓存的命中率。如果这个值很高，那就意味着InnoDB的缓存命中率很低，大量的磁盘I/O操作正在发生，这可能会严重影响数据库的性能。</p>
+</li>
+<li>
+<p>innodb_buffer_pool_read_requests 也是一个计数器，它记录了InnoDB从缓冲池中读取数据或索引的请求次数。这个值通常会比innodb_buffer_pool_reads高很多，因为它包括了所有从缓冲池中的读取操作，无论是否命中了缓存。</p>
+</li>
+</ol>
+<p>用这个命令可以查询这两个指标：</p>
+<pre><code class="language-sql">SHOW STATUS LIKE 'Innodb_buffer_pool_read_requests';  -- 缓冲池中的逻辑读请求
+SHOW STATUS LIKE 'Innodb_buffer_pool_reads';          -- 缓冲池未命中的请求（即从磁盘读取的请求）
+</code></pre>
+<p>InnoDB 缓存命中率可以通过以下公式计算：</p>
+<p>缓存命中率 = (1 - (innodb_buffer_pool_reads / innodb_buffer_pool_read_requests)) * 100%</p>
+<p>这个值表示了InnoDB成功从缓冲池中读取数据或索引的请求所占的比例。理论上，这个值越高，InnoDB的性能就越好，因为更多的请求可以在不触及磁盘的情况下得到满足。</p>
+<p>这两个缓冲池命中率指标无法直接手动清零。这些指标是累积的全局统计数据，只能在 MySQL 实例重启后自动重置。不过，可以通过以下两种方法来监控从某个时间点起的数据，以获取阶段性的缓存命中率。</p>
+<h2 id="总结">总结</h2>
+<h2 id="附录">附录</h2>
+<p>参考文章：</p>
+<ol>
+<li>MySQL 单表不要超过 2000W 行，靠谱吗？：https://my.oschina.net/u/4090830/blog/5559454</li>
+<li>为什么大家说mysql数据库单表最大两千万？依据是啥？：https://mp.weixin.qq.com/s/AOtXJNmt50KowkSDN-FlhA</li>
+<li>谁告诉你的单表最好不超过2000万条数据？：https://mp.weixin.qq.com/s/QHyCRnuAqUGFXlPCNvevHg</li>
+<li>为什么MySQL单表不能超过2000万行?：https://mp.weixin.qq.com/s/KvS4apBqfd2IBri4lxUKPA</li>
+<li>深入理解innodb_buffer_pool_reads：https://cloud.baidu.com/article/3279140</li>
+</ol>
+
+          </div>
+        </div>
+
+        
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">真言一张纸</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>

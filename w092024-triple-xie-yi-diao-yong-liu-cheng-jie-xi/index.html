@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W09/2024】Triple 协议调用流程解析 | cosmoswei go</title>
+<meta name="description" content="真言一张纸">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1735924471043">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1735924471043" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W09/2024】Triple 协议调用流程解析</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2024-03-01</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <p>Dubbo3 的主推协议 Triple 协议在原有 Dubbo 协议的调用上做了很多改变，这篇文章通过源码一步步将调用流程重新梳理一次</p>
+<p>一、Triple 协议源码信息<br>
+org.apache.dubbo.rpc.protocol.tri.TripleHttp2Protocol 是协议配置，执行解析协议逻辑<br>
+org.apache.dubbo.rpc.protocol.tri.TripleProtocol 是协议门面，暴露与引用Triple协议的服务</p>
+<p>二、Dubbo Triple 中 Handler 的调用流程</p>
+<p>1、协议解析：org.apache.dubbo.remoting.transport.netty4.NettyPortUnificationServerHandler#decode</p>
+<p>2、配置需要的Handler：org.apache.dubbo.rpc.protocol.tri.TripleHttp2Protocol#configurerHttp2Handlers</p>
+<p>3、处理连接：org.apache.dubbo.rpc.protocol.tri.transport.TripleServerConnectionHandler#channelRead</p>
+<p>4、Netty处理请求：org.apache.dubbo.remoting.http12.netty4.h2.NettyHttp2FrameHandler#channelRead</p>
+<p>5、业务线程处理请求：org.apache.dubbo.remoting.transport.dispatcher.execution.ExecutionChannelHandler#received</p>
+<p>6、业务线程处理请求：org.apache.dubbo.remoting.transport.MultiMessageHandler#received</p>
+<p>7、默认线程池：</p>
+<p>![image-20240301225142910](/Users/huangxuwei/Library/Application Support/typora-user-images/image-20240301225142910.png)</p>
+<p>8、处理调用：org.apache.dubbo.rpc.protocol.tri.h12.ServerCallListener#onComplete</p>
+<p>9、具体调用：org.apache.dubbo.rpc.protocol.tri.h12.AbstractServerCallListener#invoke</p>
+<p>10、第一个Filter：org.apache.dubbo.rpc.cluster.filter.FilterChainBuilder.CopyOfFilterChainNode#invoke</p>
+<p>![image-20240301225417996](/Users/huangxuwei/Library/Application Support/typora-user-images/image-20240301225417996.png)</p>
+<p>11、Filter链到执行：</p>
+<p>![image-20240301225754580](/Users/huangxuwei/Library/Application Support/typora-user-images/image-20240301225754580.png)</p>
+<p>12、第7步调用返回到65行（#onReturn）<br>
+：org.apache.dubbo.rpc.protocol.tri.h12.AbstractServerCallListener#onReturn</p>
+<p>13、写结果：org.apache.dubbo.remoting.http12.AbstractServerHttpChannelObserver#onNext</p>
+<p>![image-20240301232107865](/Users/huangxuwei/Library/Application Support/typora-user-images/image-20240301232107865.png)</p>
+<p>14、封装协议：org.apache.dubbo.remoting.http12.AbstractServerHttpChannelObserver#encodeHttpOutputMessage</p>
+<p>15、编码（二进制）：org.apache.dubbo.remoting.http12.message.HttpMessageCodec#encode()</p>
+<p>16、写响应：org.apache.dubbo.remoting.http12.netty4.h2.NettyHttp2FrameCodec#write</p>
+<p>17、转为HTTP2协议数据帧：org.apache.dubbo.remoting.http12.netty4.h2.NettyHttp2FrameCodec#encodeHttp2DataFrame</p>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/java-wang-luo-bian-cheng-zhong-de-yi-xie-gai-nian/">
+              <h3 class="post-title">
+                下一篇：【W08/2024】Java 网络编程中的一些概念
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">真言一张纸</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
