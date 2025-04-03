@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://cosmoswei.github.io</id>
+    <title>cosmoswei go</title>
+    <updated>2025-04-03T15:51:44.079Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://cosmoswei.github.io"/>
+    <link rel="self" href="https://cosmoswei.github.io/atom.xml"/>
+    <subtitle>真言一张纸</subtitle>
+    <logo>https://cosmoswei.github.io/images/avatar.png</logo>
+    <icon>https://cosmoswei.github.io/favicon.ico</icon>
+    <rights>All rights reserved 2025, cosmoswei go</rights>
+    <entry>
+        <title type="html"><![CDATA[【W08/2025】顺序消息新体验]]></title>
+        <id>https://cosmoswei.github.io/w072025-shun-xu-xiao-xi-xin-ti-yan/</id>
+        <link href="https://cosmoswei.github.io/w072025-shun-xu-xiao-xi-xin-ti-yan/">
+        </link>
+        <updated>2025-02-20T16:09:40.000Z</updated>
+        <summary type="html"><![CDATA[<p>顺序消息在开发中有发挥着重要的的作用，尤其是在涉及多个步骤的业务流程中，是保证系统稳定、数据一致和业务逻辑正确性的重要手段。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>顺序消息在开发中有发挥着重要的的作用，尤其是在涉及多个步骤的业务流程中，是保证系统稳定、数据一致和业务逻辑正确性的重要手段。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W08/2025】数据一致性]]></title>
+        <id>https://cosmoswei.github.io/w062025-shu-ju-yi-zhi-xing/</id>
+        <link href="https://cosmoswei.github.io/w062025-shu-ju-yi-zhi-xing/">
+        </link>
+        <updated>2025-02-17T13:12:41.000Z</updated>
+        <summary type="html"><![CDATA[<p>数据一致性问题其重要性不言而喻。从操作系统层面的锁机制，到 Java 并发编程中的多线程同步，再到分布式系统中的事务管理和一致性协议，确保数据在各种环境下的一致性是保障系统可靠运行、维护数据准确性。本文将揭示数据一致性在计算机领域的多面性和关键价值，助力理解和应对实际场景中的数据一致性挑战。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>数据一致性问题其重要性不言而喻。从操作系统层面的锁机制，到 Java 并发编程中的多线程同步，再到分布式系统中的事务管理和一致性协议，确保数据在各种环境下的一致性是保障系统可靠运行、维护数据准确性。本文将揭示数据一致性在计算机领域的多面性和关键价值，助力理解和应对实际场景中的数据一致性挑战。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W08/2025】DDIA 中的一些概念]]></title>
+        <id>https://cosmoswei.github.io/w062025-ddia-zhong-de-yi-xie-gai-nian/</id>
+        <link href="https://cosmoswei.github.io/w062025-ddia-zhong-de-yi-xie-gai-nian/">
+        </link>
+        <updated>2025-02-17T10:22:21.000Z</updated>
+        <summary type="html"><![CDATA[<p>《Designing Data-Intensive Applications》（DDIA）是一本由 Martin Kleppmann 编写的书，主要关注如何设计和构建现代数据密集型应用。书中详细探讨了构建高性能、高可用和可扩展的分布式系统的核心理念和技术。接下来对书中的一些关键概念进行整理，方便后续查阅。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>《Designing Data-Intensive Applications》（DDIA）是一本由 Martin Kleppmann 编写的书，主要关注如何设计和构建现代数据密集型应用。书中详细探讨了构建高性能、高可用和可扩展的分布式系统的核心理念和技术。接下来对书中的一些关键概念进行整理，方便后续查阅。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W01/2025】Palmx：一个次世代的 RPC 框架]]></title>
+        <id>https://cosmoswei.github.io/plamx/</id>
+        <link href="https://cosmoswei.github.io/plamx/">
+        </link>
+        <updated>2025-01-01T04:59:43.000Z</updated>
+        <summary type="html"><![CDATA[<p>基于 Netty 实现的一个的 RPC 框架，使用 Zookeeper 作为服务注册中心，手动实现了几个简单的负载均衡算，然后封装了多种序列算法，与 Spring Framework 集成，实现了基于注解驱动的服务自动注册和一键式启动服务器的功能。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>基于 Netty 实现的一个的 RPC 框架，使用 Zookeeper 作为服务注册中心，手动实现了几个简单的负载均衡算，然后封装了多种序列算法，与 Spring Framework 集成，实现了基于注解驱动的服务自动注册和一键式启动服务器的功能。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W52/2024】现代操作系统#14网络协议栈与系统（转载）]]></title>
+        <id>https://cosmoswei.github.io/w522024-xian-dai-cao-zuo-xi-tong-14-wang-luo-xie-yi-zhan-yu-xi-tong-zhuan-zai/</id>
+        <link href="https://cosmoswei.github.io/w522024-xian-dai-cao-zuo-xi-tong-14-wang-luo-xie-yi-zhan-yu-xi-tong-zhuan-zai/">
+        </link>
+        <updated>2024-12-24T05:57:21.000Z</updated>
+        <summary type="html"><![CDATA[<p>本文转载自《现代操作系统 原理与实战》的扩展章节第14章网络协议栈与系统，如有侵权，请邮件至2117008741@qq.com 删除。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>本文转载自《现代操作系统 原理与实战》的扩展章节第14章网络协议栈与系统，如有侵权，请邮件至2117008741@qq.com 删除。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W51/2024】GC 日志入门]]></title>
+        <id>https://cosmoswei.github.io/w512024-gc-ri-zhi-ru-men/</id>
+        <link href="https://cosmoswei.github.io/w512024-gc-ri-zhi-ru-men/">
+        </link>
+        <updated>2024-12-17T16:59:43.000Z</updated>
+        <summary type="html"><![CDATA[<p>GC 日志是 JVM 在执行垃圾回收时生成的日志，它记录了垃圾回收的详细信息，包括回收的类型、时间、回收的区域、GC 期间暂停的时间（即 STW 时间）、各个代的内存使用情况等。通过分析 GC 日志，开发人员可以诊断和优化应用程序的内存管理，了解 GC 对系统性能的影响，找出可能的性能瓶颈。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>GC 日志是 JVM 在执行垃圾回收时生成的日志，它记录了垃圾回收的详细信息，包括回收的类型、时间、回收的区域、GC 期间暂停的时间（即 STW 时间）、各个代的内存使用情况等。通过分析 GC 日志，开发人员可以诊断和优化应用程序的内存管理，了解 GC 对系统性能的影响，找出可能的性能瓶颈。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W50/2024】电信号转变为网络帧的过程]]></title>
+        <id>https://cosmoswei.github.io/w502024-dian-xin-hao-zhuan-bian-wei-wang-luo-zheng-de-guo-cheng/</id>
+        <link href="https://cosmoswei.github.io/w502024-dian-xin-hao-zhuan-bian-wei-wang-luo-zheng-de-guo-cheng/">
+        </link>
+        <updated>2024-12-15T08:52:22.000Z</updated>
+        <summary type="html"><![CDATA[<p>在学习网络编程时，我们通常会关注内核网络协议栈的相关知识。然而，回到 OSI 七层模型的角度，数据链路层究竟是如何运作的呢？网线中的电信号是如何转化为网络数据帧和数据包的？本文将对此进行简要探讨。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>在学习网络编程时，我们通常会关注内核网络协议栈的相关知识。然而，回到 OSI 七层模型的角度，数据链路层究竟是如何运作的呢？网线中的电信号是如何转化为网络数据帧和数据包的？本文将对此进行简要探讨。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W48/2024】Spring 面试常看常新]]></title>
+        <id>https://cosmoswei.github.io/w482024-spring-mian-shi-chang-kan-chang-xin/</id>
+        <link href="https://cosmoswei.github.io/w482024-spring-mian-shi-chang-kan-chang-xin/">
+        </link>
+        <updated>2024-12-05T16:21:11.000Z</updated>
+        <summary type="html"><![CDATA[<p>Spring 是面试中的重要部分，其中有几个关键问题在面试中出现的频率特别高，比如 Spring Bean 的生成流程，SpringBoot 的启动流程，Spring 循环依赖，笔者对于这些知识点总是记了忘，忘了记，所以对这些知识点做一个汇总。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>Spring 是面试中的重要部分，其中有几个关键问题在面试中出现的频率特别高，比如 Spring Bean 的生成流程，SpringBoot 的启动流程，Spring 循环依赖，笔者对于这些知识点总是记了忘，忘了记，所以对这些知识点做一个汇总。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W46/2024】CompletableFuture 入门教程]]></title>
+        <id>https://cosmoswei.github.io/w462024-completablefuture-ru-men-jiao-cheng/</id>
+        <link href="https://cosmoswei.github.io/w462024-completablefuture-ru-men-jiao-cheng/">
+        </link>
+        <updated>2024-11-17T15:23:02.000Z</updated>
+        <summary type="html"><![CDATA[<p>CompletableFuture 是 Java 中一个强大的工具，用于创建和管理异步任务。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>CompletableFuture 是 Java 中一个强大的工具，用于创建和管理异步任务。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W46/2024】cURL 入门教程]]></title>
+        <id>https://cosmoswei.github.io/w462024-curl-ru-men-jiao-cheng/</id>
+        <link href="https://cosmoswei.github.io/w462024-curl-ru-men-jiao-cheng/">
+        </link>
+        <updated>2024-11-14T03:00:40.000Z</updated>
+        <summary type="html"><![CDATA[<p>cURL 是一个利用 URL 语法在命令行下工作的文件传输工具，1997 年首次发行。它支持文件上传和下载，所以是综合传输工具，但按传统，习惯称cURL为下载工具。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>cURL 是一个利用 URL 语法在命令行下工作的文件传输工具，1997 年首次发行。它支持文件上传和下载，所以是综合传输工具，但按传统，习惯称cURL为下载工具。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W44/2024】高效传输：以 QUIC 构建高效传输通道]]></title>
+        <id>https://cosmoswei.github.io/quic/</id>
+        <link href="https://cosmoswei.github.io/quic/">
+        </link>
+        <updated>2024-11-03T14:31:06.000Z</updated>
+        <summary type="html"><![CDATA[<p>⾃ 2012 年 Google 前瞻性地提出 QUIC 传输协议，历经⼗年迭代，HTTP/3 作为 HTTP/2 的继任者，在 2022 年 IETF 正式标准化 HTTP/3 为 RFC9114。HTTP/3 凭借其对 QUIC 协议的深度整合以及从 TCP 向 UDP 的底层连接转型，迅速赢得了业界的⼴泛接纳。截⽌到2022年11⽉，全球已有超过四分之⼀的⽹站部署了 HTTP/3 技术，如下图。⼀个崭新的⾼速、⾼效⽹络时代正逐步拉开帷幕。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>⾃ 2012 年 Google 前瞻性地提出 QUIC 传输协议，历经⼗年迭代，HTTP/3 作为 HTTP/2 的继任者，在 2022 年 IETF 正式标准化 HTTP/3 为 RFC9114。HTTP/3 凭借其对 QUIC 协议的深度整合以及从 TCP 向 UDP 的底层连接转型，迅速赢得了业界的⼴泛接纳。截⽌到2022年11⽉，全球已有超过四分之⼀的⽹站部署了 HTTP/3 技术，如下图。⼀个崭新的⾼速、⾼效⽹络时代正逐步拉开帷幕。</p>
+]]></content>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[【W44/2024】异步读写：窥见未来的系统调用——io_uring]]></title>
+        <id>https://cosmoswei.github.io/iouring/</id>
+        <link href="https://cosmoswei.github.io/iouring/">
+        </link>
+        <updated>2024-11-03T14:30:28.000Z</updated>
+        <summary type="html"><![CDATA[<p>从 2019 年 Linux 在 5.1 版本发布 io_uring 开始，许多框架都使用了这一项技术，比如 netpoll、rocksdb、ceph、spdk，但是这项技术并没有在 Java 生态中大规模使用，幸运的是，在 Netty 社区，目前正在孵化使用 io_uring 的项目 —— <a href="https://github.com/netty/netty-incubator-transport-io_uring">netty-incubator-transport-io_uring</a>，里面提供了新的读写模型 IOUringEventLoop，基于这项技术实现了 io_uring。</p>
+]]></summary>
+        <content type="html"><![CDATA[<p>从 2019 年 Linux 在 5.1 版本发布 io_uring 开始，许多框架都使用了这一项技术，比如 netpoll、rocksdb、ceph、spdk，但是这项技术并没有在 Java 生态中大规模使用，幸运的是，在 Netty 社区，目前正在孵化使用 io_uring 的项目 —— <a href="https://github.com/netty/netty-incubator-transport-io_uring">netty-incubator-transport-io_uring</a>，里面提供了新的读写模型 IOUringEventLoop，基于这项技术实现了 io_uring。</p>
+]]></content>
+    </entry>
+</feed>

@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W08/2025】数据一致性 | cosmoswei go</title>
+<meta name="description" content="真言一张纸">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1743695501335">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1743695501335" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://cosmoswei.github.io/about" class="menu purple-link">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W08/2025】数据一致性</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2025-02-17</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <p>数据一致性问题其重要性不言而喻。从操作系统层面的锁机制，到 Java 并发编程中的多线程同步，再到分布式系统中的事务管理和一致性协议，确保数据在各种环境下的一致性是保障系统可靠运行、维护数据准确性。本文将揭示数据一致性在计算机领域的多面性和关键价值，助力理解和应对实际场景中的数据一致性挑战。</p>
+<!-- more -->
+<h2 id="并发安全性">并发安全性</h2>
+<p>如何准确的修改数据？</p>
+<h3 id="原子指令">原子指令</h3>
+<p>CAS、TAS、TTAS、FAA浅析：https://blog.csdn.net/u011461385/article/details/107282221</p>
+<h4 id="cas">CAS</h4>
+<p>Java 中的 CAS 家族，可以说，JUC 就是基于 CAS 建立的并发框架。</p>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502052312910.png" style="zoom:33%;" />
+<h3 id="数据锁">数据锁</h3>
+<h4 id="内核锁linux-mutex">内核锁：Linux Mutex</h4>
+<p>Java 重量级锁</p>
+<h4 id="内存锁锁结构">内存锁：锁结构</h4>
+<p>Java 轻量级锁</p>
+<p>Golang 锁</p>
+<p>MySQL 锁</p>
+<h4 id="分布式锁">分布式锁</h4>
+<p>Redis</p>
+<p>ZooKeeper</p>
+<h2 id="缓存一致性">缓存一致性</h2>
+<p>如何安全，准确的访问异构数据？访问到过期的数据意味着数据被修改，这个修改也是并发安全的。</p>
+<h3 id="cpucachememory-一致性">CPU/Cache/Memory 一致性</h3>
+<p>CPU、缓存、内存的关系如下：</p>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501271512183.png" style="zoom:33%;" />
+<p>其中，缓存内部结构如下图：</p>
+<figure data-type="image" tabindex="1"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501241427131.png" alt="" loading="lazy"></figure>
+<p>缓存分布在各个 CPU 核心，如何保证各个 CPU 缓存的一致性？如何保证寄存器，缓存，内存的一致性？答案是 MESI 协议。</p>
+<p>X86 处理器所使用的缓存一致性协议就是基于 MESI 协议的。MESI 协议对内存数据访问的控制类似于读写锁，它使得针对同一地址的读内存操作是并发的，而针对同一地址的写内存操作是独占的，即针对同一内存地址进行的写操作在任意一个时刻只能够由一个处理器执行。在 MESI 协议中，一个处理器往内存中写数据时必须持有该数据的所有权。</p>
+<p>为了保障数据的一致性，MESI将缓存条目的状态划分为 Modified、Exclusive、Shared 和 Invalid 这 4 种，MESI协议中一个缓存条目的 Flag 值有以下4种可能：</p>
+<ul>
+<li>Invalid（无效的）：该状态表示相应缓存行中不包含任何内存地址对应的有效副本数据。该状态是缓存条目的初始状态。</li>
+<li>Shared（共享的）：该状态表示相应缓存行包含相应内存地址所对应的副本数据。并且，其他处理器上的高速缓存中也可能包含相同内存地址对应的副本数据。因此，一个缓存条目的状态如果为 Shared，并且其他处理器上也存在Tag值与该缓存条目的Tag值相同的缓存条目，那么这些缓存条目的状态也为 Shared。处于该状态的缓存条目，其缓存行中包含的数据与主内存中包含的数据一致。</li>
+<li>Exclusive（独占的）：该状态表示相应缓存行包含相应内存地址所对应的副本数据。并且，该缓存行以独占的方式保留了相应内存地址的副本数据，即其他所有处理器上的高速缓存当前都不“保留该数据的有效副本。处于该状态的缓存条目，其缓存行中包含的数据与主内存中包含的数据一致。</li>
+<li>Modified（更改过的）：该状态表示相应缓存行包含对相应内存地址所做的更新结果数据。由于MESI协议中的任意一个时刻只能够有一个处理器对同一内存地址对应的数据进行更新，因此在多个处理器上的高速缓存中 Tag 值相同的缓存条目中，任意一个时刻只能够有一个缓存条目处于该状态。处于该状态的缓存条目，其缓存行中包含的数据与主内存中包含的数据不一致。</li>
+</ul>
+<p>并在此基础上定义了一组消息（Message）用于协调各个处理器的读、写内存操作，处理器在执行内存读、写操作时在必要的情况下会往总线（Bus）中发送特定的请求消息，同时每个处理器还嗅探（Snoop，也称拦截）总线中由其他处理器发出的请求消息并在一定条件下往总线中回复相应的响应消息。</p>
+<figure data-type="image" tabindex="2"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501242123170.png" alt="" loading="lazy"></figure>
+<blockquote>
+<p>MESI协议解决了缓存一致性问题，但是其自身也存在一个性能弱点——处理器执行写内存操作时，必须等待其他所有处理器将其高速缓存中的相应副本数据删除并接收到这些处理器所回复的Invalidate Acknowledge/Read Response消息之后才能将数据写入高速缓存。为了规避和减少这种等待造成的写操作的延迟（Latency），硬件设计者引入了写缓冲器和无效化队列。</p>
+</blockquote>
+<h3 id="cacheredismysql-一致性">Cache/Redis/MySQL 一致性</h3>
+<p>本地缓存，分布式缓存，数据库的数据如何保证一致性？</p>
+<h4 id="缓存的读写策略">缓存的读写策略</h4>
+<figure data-type="image" tabindex="3"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501280005935.png" alt="" loading="lazy"></figure>
+<h4 id="延时双删">延时双删</h4>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502021256660.png" alt="/" style="zoom:33%;" />
+<h4 id="mq-删除确认">MQ 删除确认</h4>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502021257914.png" alt="/" style="zoom:33%;" />
+<h4 id="binlog-异步删除">binlog 异步删除</h4>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502021257465.png" alt="/" style="zoom:33%;" />
+<h4 id="写缓存禁用">写缓存禁用</h4>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501282342409.png" alt="/" style="zoom:33%;" />
+<h4 id="细粒度锁方案同程旅行">细粒度锁方案（同程旅行）</h4>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501282341506.png" alt="/" style="zoom:33%;" />
+<h4 id="本地缓存数据如何准确过期">本地缓存数据如何准确过期</h4>
+<p>为了提高程序的读写性能，常常会为数据做一层缓存，比如说Redis常常作为MySQL数据的缓存，但是为了更高的性能，Redis已经无法满足，所以引入本地缓存进一步提高程序的性能，但是使用本地缓存有一个难点，本地缓存如何准确失效？（缓存淘汰策略不够实时），实时的所有节点本地缓存如何准确失效呢？</p>
+<p>一个可行的方案是使用 MQ 的广播消息，目前 RocketMQ 与 Kafka 支持了广播消息，广播消息会发给 TOPIC 的所有消费者，消费者至少收到一次消息，似乎可以用来作为本地缓存失效的消息。但是广播消息没有ACK机制，无法保证一定消费成功，当操作失效本地缓存失败时，无法进行重试，导致缓存数据异常。</p>
+<p>Kafka 本身没有内建的自动重试机制，但是 Spring-Kafka 通过 RetryableTopic 注解实现了重试，例如：</p>
+<pre><code class="language-java">@KafkaListener(topics = &quot;cache-invalidation-topic&quot;)
+@Retryable(maxAttempts = 3, backoff = @Backoff(delay = 1000, multiplier = 2))
+public void handleInvalidation(String key) {
+    try {
+        localCache.delete(key); // 删除本地缓存
+    } catch (Exception e) {
+        throw new RuntimeException(&quot;Failed to invalidate cache&quot;, e);
+    }
+}
+
+// 最终失败后进入死信队列
+@KafkaListener(topics = &quot;dlq-topic&quot;)
+public void handleDlq(Message&lt;?&gt; message) {
+    log.error(&quot;DLQ Processing: {}&quot;, message);
+    alertService.notifyAdmin(message);
+}
+</code></pre>
+<p>Spring Kafka 的 Retryable 机制通常通过 Spring Retry 结合 Kafka Listener 实现。</p>
+<p>如果没有 Kafka，如何进行重试呢？那就只能在外部想办法，在收到广播消息后，如果消费过程中出现异常，则利用重试框架进行重试，一般有内存重试与持久化重试两种选择，在内存重试的缺点是在JVM进程结束后会，重试信息会丢失，持久化的话会把重试任务信息实例化到数据库，再使用定时任务扫表进行重试，因为是本地缓存场景所以就直接在内存里重试了。</p>
+<figure data-type="image" tabindex="4"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502011859146.svg" alt="" loading="lazy"></figure>
+<p>还有一个问题是广播消息不一定会传播到消费端，因为网络抖动，或者网络隔离，Broker 无法与消费者通信，就造成了某个本地缓存的节点无法失效，造成缓存出现不一致，这就需要缓存失效的兜底逻辑。这个兜底逻辑有两种方案，一种是缓存的 TTL，另一种是定时任务对过期缓存进行清除，但是这两种方案都会造成短暂的数据不一致现象。</p>
+<h3 id="bufferpooldata-一致性">BufferPool/Data 一致性</h3>
+<p>Buffer Pool 是用来缓存数据页、索引页等的重要组件。MySQL 通过 WAL（Write-Ahead Logging） 机制、redo log（重做日志） 和 undo log（回滚日志） 来保证数据一致性。</p>
+<ol>
+<li>先写 redo log，再修改 Buffer Pool（WAL 机制）</li>
+<li>定期刷脏页到磁盘（Checkpoint 机制）</li>
+<li>崩溃恢复时使用 redo log</li>
+<li>事务回滚时使用 undo log</li>
+<li>双写缓冲防止部分写失败</li>
+</ol>
+<h3 id="indexdata-一致性">Index/Data 一致性</h3>
+<p>数据库索引、数据库数据如何保证一致性？</p>
+<p>数据文件存储</p>
+<ul>
+<li>
+<p>表数据（包括主键索引和行数据）存储在 .ibd 文件中（独立表空间模式）。</p>
+</li>
+<li>
+<p>索引数据（二级索引）也存储在 .ibd 文件中，因为 InnoDB 的索引和数据都是页（Page）的形式组织的。</p>
+</li>
+</ul>
+<p>数据和主键索引是一起存储的（聚簇索引），二级索引单独存储。</p>
+<p>写入顺序：</p>
+<ul>
+<li>先写 redo log，保证崩溃恢复</li>
+<li>更新 Buffer Pool（数据页 &amp; 索引页）</li>
+<li>事务提交后写 binlog</li>
+<li>Checkpoint 时将脏页（数据 &amp; 索引）刷入磁盘</li>
+</ul>
+<p>一致性保障：</p>
+<ul>
+<li>redo log 先行写入，保证崩溃恢复</li>
+<li>undo log 保障事务回滚</li>
+<li>双写缓冲防止部分写失败</li>
+<li>binlog + redo log 两阶段提交，保证 MySQL 复制和恢复的可靠性</li>
+</ul>
+<h3 id="redologbinlog-一致性">redolog/binlog 一致性</h3>
+<p>redolog/binlog 两种日志如何保证一致性？（图源极客时间专栏《MySQL实战45讲》）</p>
+<figure data-type="image" tabindex="5"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502052327469.png" alt="" loading="lazy"></figure>
+<p>MySQL 通过 两阶段提交（2PC, Two-Phase Commit） 机制来保证 redo log 和 binlog 之间的一致性，确保即使发生崩溃，也不会出现数据丢失或数据不一致的问题。</p>
+<p>redolog 与 binlog 搭配两阶段提交可以保证数据的持久性，但是由于事务可以回滚，这两者无需保证一致性。出现不一致也是正常的。</p>
+<p>MySQL 8.0 通过 XA 事务（分布式事务协议） 进一步优化了 redo log 和 binlog 之间的原子性和一致性，主要体现在 内部 XA 事务 机制。具体优化点</p>
+<ol>
+<li>
+<p>使用 MySQL 自己的 XA 事务管理器：MySQL 8.0 在 mysql.transaction_registry 维护 XA 事务状态，确保在崩溃恢复时可以自动提交或回滚事务。</p>
+</li>
+<li>
+<p>事务状态持久化：事务的 prepare 阶段状态 会被持久化到 mysql.transaction_registry，防止崩溃时事务丢失。</p>
+</li>
+<li>
+<p>崩溃恢复优化：如果事务在 prepare 阶段崩溃，MySQL 8.0 可以自动检测和回滚，不需要依赖 binlog 恢复</p>
+</li>
+<li>
+<p>Binlog Group Commit（日志组提交）优化：MySQL 8.0 允许多个事务在 commit 阶段批量提交 binlog 和 redo log，提高写入效率。</p>
+</li>
+</ol>
+<h3 id="pagecachedisk-一致性">PageCache/Disk 一致性</h3>
+<p>在 Linux 操作系统中，PageCache 是 文件系统层的缓存，它的主要作用是减少磁盘 I/O，提高读写性能。但是，PageCache 的数据默认存储在内存中，并不会立即写入磁盘，因此需要通过一系列机制来保证数据最终持久化到磁盘。</p>
+<h4 id="定时触发">定时触发</h4>
+<p>Linux 通过 pdflush（或 bdflush）线程 负责定期将 PageCache 的脏数据（Dirty Page）刷入磁盘：</p>
+<ul>
+<li>
+<p>dirty_ratio：当 PageCache 脏页占比超过该阈值（默认 20%），触发写入磁盘。</p>
+</li>
+<li>
+<p>dirty_background_ratio：达到该阈值（默认 10%）时，后台进程开始- 异步写入磁盘- 。</p>
+</li>
+<li>
+<p>dirty_writeback_centisecs：控制内核多久触发一次- 后台刷新- （默认 5 秒）。</p>
+</li>
+<li>
+<p>dirty_expire_centisecs：数据在 PageCache 中停留多久后必须写入磁盘（默认 30 秒）。</p>
+</li>
+</ul>
+<pre><code class="language-shell"># 查看当前设置
+sysctl -a | grep dirty
+</code></pre>
+<h4 id="函数触发">函数触发</h4>
+<p>sync / fsync / fdatasync 触发刷盘</p>
+<p>除了内核自动写入磁盘，进程也可以主动触发数据刷入磁盘：</p>
+<ol>
+<li>sync 命令：将整个 PageCache 里的数据写入磁盘（可能影响所有进程）。</li>
+</ol>
+<pre><code class="language-shell">sync
+</code></pre>
+<ol start="2">
+<li>fsync(fd) 系统调用（应用层控制写入时机）：仅对单个文件进行刷盘，确保该文件的数据与元数据（如修改时间）同步写入磁盘。</li>
+</ol>
+<pre><code class="language-c">int fd = open(&quot;data.txt&quot;, O_WRONLY);
+write(fd, &quot;hello&quot;, 5);
+fsync(fd); *//* 立即写入磁盘
+close(fd);
+</code></pre>
+<ol start="3">
+<li>fdatasync(fd)（仅数据刷盘，不刷元数据）:适用于数据库等对性能要求较高的应用，比 fsync 更快：</li>
+</ol>
+<pre><code class="language-c">fdatasync(fd);
+</code></pre>
+<h4 id="日志机制">日志机制</h4>
+<p>现代文件系统（如 ext4、XFS） 采用 日志（Journal）机制 来保证 PageCache 与磁盘数据的一致性：</p>
+<p>数据模式（Data Mode）：</p>
+<ol>
+<li>
+<p>Writeback（回写模式）：数据先写入 PageCache，后续写入磁盘（可能导致崩溃后数据不一致）。</p>
+</li>
+<li>
+<p>Ordered（有序模式，ext4 默认）：先写数据，再写日志，崩溃时可以回滚日志，避免数据损坏。</p>
+<ol start="3">
+<li>Journal（日志模式）：数据和日志都写入磁盘，保证最高级别一致性，但写入性能最差。</li>
+</ol>
+</li>
+</ol>
+<h4 id="磁盘缓存">磁盘缓存</h4>
+<p>磁盘缓存（Disk Cache）和 O_DIRECT，大多数现代硬盘（SSD/HDD）内部有- 自己的缓存- （Disk Cache），即使 fsync() 也未必- 真正- 写入磁盘：</p>
+<ul>
+<li>磁盘缓存（Disk Write-Back Cache）- ：操作系统 fsync() 只是把数据从 PageCache 刷入磁盘缓存，未必立即写入磁盘。</li>
+<li>解决方案：</li>
+</ul>
+<ol>
+<li>
+<p>强制关闭磁盘缓存- ：挂载文件系统时加 barrier=1 选项。</p>
+</li>
+<li>
+<p>使用 O_DIRECT 直接绕过 PageCache。</p>
+</li>
+</ol>
+<h2 id="分布式事务">分布式事务</h2>
+<h3 id="mysql-本地事务">MySQL 本地事务</h3>
+<p>MySQL 的事务是如何实现的？</p>
+<p>事务的 ACID 四大特性，即原子性 (Atomicity)、 一致性(Consistency)、隔离性(Isolation) 和 持久性(Durability)。</p>
+<p>ACID</p>
+<p>A：undolog</p>
+<p>I：MVCC+锁</p>
+<p>D：redolog</p>
+<p>C：AID</p>
+<h3 id="mysql-主从一致性">MySQL 主从一致性</h3>
+<p>MySQL 主从同步主要依赖的就是 binlog，MySQL 默认是异步复制，具体流程如下：</p>
+<p>主库：</p>
+<ol>
+<li>接受到提交事务请求。</li>
+<li>更新数据。</li>
+<li>将数据写到binlog中。</li>
+<li>给客户端响应。</li>
+<li>推送binlog到从库中。</li>
+</ol>
+<p>从库：</p>
+<ol>
+<li>由 I/O 线程将同步过来的 binlog 写入到 relaylog 中。</li>
+<li>由 SQL 线程从 relaylog 重放事件，更新数据</li>
+<li>给主库返回响应。</li>
+</ol>
+<figure data-type="image" tabindex="6"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202501271641535.png" alt="" loading="lazy"></figure>
+<h3 id="一致性协议">一致性协议</h3>
+<h4 id="paxos">Paxos</h4>
+<p>Paxos 是 Leslie Lamport 在 1990 年提出的最早的分布式一致性算法。它用于保证多个分布式节点在面对网络分区或节点故障时，依然能对某个值达成一致。</p>
+<p>Paxos 主要有三个角色：</p>
+<ol>
+<li>Proposer（提议者）：提出提案，并希望让多数节点接受。</li>
+<li>Acceptor（接受者）：投票决定是否接受提案。</li>
+<li>Learner（学习者）：获得最终达成一致的提案值。</li>
+</ol>
+<p>Paxos 的核心机制：</p>
+<ol>
+<li>提案阶段（Prepare Phase）</li>
+</ol>
+<ul>
+<li>
+<p>Proposer 发送提案请求（编号递增）。</p>
+</li>
+<li>
+<p>Acceptor 只接受比之前更大的提案编号。</p>
+</li>
+</ul>
+<ol start="2">
+<li>接受阶段（Accept Phase）</li>
+</ol>
+<ul>
+<li>
+<p>当 Proposer 收到多数 Acceptor 的回应后，发送 Accept 提案。</p>
+</li>
+<li>
+<p>如果 Acceptor 发现当前提案编号仍然最大，则接受该提案。</p>
+</li>
+</ul>
+<ol start="3">
+<li>提交阶段（Commit Phase）</li>
+</ol>
+<ul>
+<li>一旦某个值被多数 Acceptor 接受，Learner 就会学习最终决定的值。</li>
+</ul>
+<blockquote>
+<p>Multi-Paxos 是一种通过共享 Leader 提案来优化多个提案一致性过程的算法，能够显著提高性能，减少网络延迟和选举次数，适用于高性能要求的分布式系统。尽管它比传统的单一 Paxos 更复杂，但能够在多次提案的场景下提供更高的效率。</p>
+</blockquote>
+<blockquote>
+<p>通过选取主Proposer，就可以保证Paxos算法的活性， 这样是ZAB协议的由来。</p>
+</blockquote>
+<h4 id="raft">Raft</h4>
+<p>Paxos 有两个明显的缺点：</p>
+<ol>
+<li>难以理解</li>
+<li>在工程是实现上比较复杂。</li>
+</ol>
+<p>Raft 由 Diego Ongaro 和 John Ousterhout 于 2014 年提出，旨在提供一种比 Paxos 更易理解和实现的分布式一致性算法。它主要用于分布式系统的日志复制，常用于 Etcd、TiDB、CockroachDB 等系统。</p>
+<p>Raft 主要分为以下三个角色：</p>
+<ol>
+<li>
+<p>Leader（领导者）：负责处理所有的客户端请求，并复制日志到 Follower 节点。</p>
+</li>
+<li>
+<p>Follower（跟随者）：被动接受 Leader 的命令，并进行日志复制。</p>
+</li>
+<li>
+<p>Candidate（候选者）：当 Follower 选举 Leader 时，可能成为 Candidate 进行竞选。</p>
+</li>
+</ol>
+<p>Raft 的核心机制</p>
+<ol>
+<li>Leader 选举</li>
+</ol>
+<ul>
+<li>
+<p>通过随机超时时间触发选举，避免选票分裂。</p>
+</li>
+<li>
+<p>候选者获取大多数选票后，成为 Leader。</p>
+</li>
+</ul>
+<ol start="2">
+<li>日志复制</li>
+</ol>
+<ul>
+<li>
+<p>客户端请求由 Leader 处理，并同步日志到 Follower。</p>
+</li>
+<li>
+<p>只有当大多数节点确认日志提交，Leader 才认为日志是最终一致的。</p>
+</li>
+</ul>
+<ol start="3">
+<li>故障恢复</li>
+</ol>
+<ul>
+<li>
+<p>Leader 挂掉后，Follower 触发新一轮选举，选出新的 Leader。</p>
+</li>
+<li>
+<p>新 Leader 继续进行日志复制，保证系统一致性。</p>
+</li>
+</ul>
+<p>https://ramcloud.atlassian.net/wiki/download/attachments/6586375/raft.pdf</p>
+<p>一个关于 Raft 一致性算法的浓缩总结</p>
+<figure data-type="image" tabindex="7"><img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502112343198.png" alt="" loading="lazy"></figure>
+<h4 id="raft-vs-paxos">Raft vs Paxos</h4>
+<p>Raft 和 Paxos 的核心区别主要体现在 设计思想、易实现性、选举机制、日志复制方式 等方面。</p>
+<ol>
+<li>Raft vs Paxos 核心区别</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>对比点</th>
+<th>Raft</th>
+<th>Paxos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心设计目标</td>
+<td>易实现，易理解</td>
+<td>理论上强一致，但实现复杂</td>
+</tr>
+<tr>
+<td>角色</td>
+<td>Leader（领导者），Follower（跟随者），Candidate（候选者）</td>
+<td>Proposer（提议者），Acceptor（接受者），Learner（学习者）</td>
+</tr>
+<tr>
+<td>选举机制</td>
+<td>随机超时触发选举，避免选票分裂</td>
+<td>需要多阶段提案确认</td>
+</tr>
+<tr>
+<td>日志复制</td>
+<td>Leader 负责所有日志复制</td>
+<td>Proposer 需要多数 Acceptor 认可</td>
+</tr>
+<tr>
+<td>数据提交</td>
+<td>当多数节点确认提交，Leader 认为数据最终一致</td>
+<td>多个 Acceptor 参与决策，需要多轮交互</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>更快，减少网络通信</td>
+<td>更慢，需要多轮消息传递</td>
+</tr>
+<tr>
+<td>适用场景</td>
+<td>分布式存储（Etcd、TiDB、CockroachDB）</td>
+<td>Google Chubby、ZooKeeper</td>
+</tr>
+<tr>
+<td>工程落地</td>
+<td>简单，广泛应用于工程</td>
+<td>复杂，理论严谨但实现困难</td>
+</tr>
+</tbody>
+</table>
+<ol start="2">
+<li>关键实现上的区别</li>
+</ol>
+<p>（1）选举机制</p>
+<ul>
+<li>Raft：Follower 发现 Leader 超时，就会变成 Candidate 进行选举，随机超时机制可避免选票分裂。</li>
+<li>Paxos：通过 Proposer 提案，Acceptor 进行投票，需要多轮确认，可能导致竞选冲突。</li>
+</ul>
+<p>（2）日志复制</p>
+<ul>
+<li>
+<p>Raft：Leader 统一管理日志，按顺序复制到 Follower，保证顺序一致。</p>
+</li>
+<li>
+<p>Paxos：每个提案独立进行，多轮确认可能导致日志不连续。</p>
+</li>
+</ul>
+<p>（3）一致性保障</p>
+<ul>
+<li>
+<p>Raft：Leader 选举后，Follower 与 Leader 保持同步，日志全局一致。</p>
+</li>
+<li>
+<p>Paxos：依赖多个 Acceptor 选定值，可能会有延迟或不连续的问题。</p>
+</li>
+</ul>
+<ol start="3">
+<li>什么时候用 Raft？什么时候用 Paxos？</li>
+</ol>
+<ul>
+<li>
+<p>Raft 适用于 需要易理解、易实现的一致性系统，如 分布式数据库（Etcd、TiDB）。</p>
+</li>
+<li>
+<p>Paxos 适用于 需要更高安全性和灵活性的场景，如 Google Chubby、ZooKeeper，但实现复杂。</p>
+</li>
+</ul>
+<h4 id="kafka-为什么抛弃-zkpaxos">Kafka 为什么抛弃 ZK（Paxos）？</h4>
+<p>Kafka 在最新的 3.X 版本放弃了在之前版本使用的 ZK，(ZK 使用的ZAB 是由Paxos 改进而来) 作为分布式协调的解决方案，而是使用 Raft 协议的变种 kraft 作为解决方案。</p>
+<ul>
+<li>Raft 实现简单。</li>
+<li>部署简单，减少 ZK 的依赖，节约成本。</li>
+</ul>
+<h4 id="oceanbase-为什么使用-paxos">OceanBase 为什么使用 Paxos？</h4>
+<p>ob 做的时候 raft 根本没出来</p>
+<h3 id="分布式事务-2">分布式事务</h3>
+<blockquote>
+<p>分布式事务与一致性协议</p>
+<p>一致性协议强调事务 ACID 中的 C，体现在分布式数据库中，就是一个数据分布在不同节点上，对任何节点数据的修改应该是一致的，需要同步到其他所有节点上，数据对于分布式是一致的，是技术上的概念。</p>
+<p>分布式事务要满足事务的四大特性，在分布式环境下，一组操作，在事务内的操作也要是原子的，隔离的，一致的，与单机事务在语义上是一致的，没有脏读，幻读情况发生，强调强事务的概念。是应用上的概念。</p>
+<p>比如说，Raft 协议保证了不同节点的数据是一致的，但是并没有保证隔离性，其他节点</p>
+</blockquote>
+<h4 id="quorum">Quorum</h4>
+<p>Quorum NWR算法的核心思想是通过设置读写操作的节点数（N、W、R）来实现数据的一致性和可用性的平衡。具体来说，N表示存储每个数据副本的节点总数，W表示写操作需要成功完成的最小节点数，R表示读操作需要查询的最小节点数。通过合理配置这些参数，可以在不同的应用场景下灵活调整系统的性能和可靠性。</p>
+<p>RabbitMQ 的 Quorum 模式</p>
+<h4 id="percolator">Percolator</h4>
+<p>Percolator 是 Google 在 2006 年推出的一种分布式事务系统，主要用于为 Google 的分布式存储系统提供 分布式事务 支持。Percolator 的目标是解决传统分布式数据库中的事务一致性问题，它基于一种类似于 两阶段提交协议（2PC） 的机制，但为了优化性能，采用了轻量级的延迟提交策略，避免了传统 2PC 中的阻塞问题。</p>
+<blockquote>
+<p>基于两阶段提交的改进版本</p>
+<ul>
+<li>第一个事务参与者是事务协调者。</li>
+<li>全局授时机制。</li>
+</ul>
+</blockquote>
+<p>Percolator 最早用于 Google 的 Bigtable（分布式存储系统）之上，它为 Bigtable 提供了一个能够处理分布式事务的层，使得应用可以在 Bigtable 上进行跨节点的一致性事务。</p>
+<h4 id="spanner">Spanner</h4>
+<p>Spanner 是 Google 的一个全球分布式关系型数据库，旨在提供强一致性和高可用性，并能够扩展到全球范围。Spanner 的设计目标是能够处理高并发、大规模分布式的应用，支持 SQL 查询，且兼具传统关系型数据库的特点和分布式数据库的可扩展性。</p>
+<p>Spanner 的关键特性：</p>
+<ul>
+<li>强一致性：Spanner 使用 Paxos 协议 和 TrueTime API 提供跨地域的强一致性和高可用性。</li>
+<li>全球时钟同步：通过 TrueTime API，Spanner 实现了精确的时钟同步，能够确保跨数据中心的数据一致性，避免了时钟漂移引发的分布式事务问题。</li>
+<li>分布式事务支持：Spanner 提供全局事务支持，事务在多个节点、多个数据中心之间分布执行，但依然保证 ACID 属性（特别是原子性和一致性）。</li>
+</ul>
+<p>在 Spanner 的实现过程中，Percolator 的思想被采纳并进一步发展，解决了跨多个数据中心的强一致性问题，并加入了全球时钟同步机制 TrueTime，使得它能够在全球范围内提供事务一致性。</p>
+<h3 id="事务消息">事务消息</h3>
+<h4 id="kafka-事务消息">Kafka 事务消息</h4>
+<p>多条消息发送是一个原子操作，要么全部发送成功，要么全部发送失败。</p>
+<h4 id="rocketmq-事务消息">RocketMQ 事务消息</h4>
+<p>消息发送与本地操作是一个原子操作，本地事务回滚则消息回滚，消息回滚则本地事务回滚，半消息？两阶段提交。</p>
+<h3 id="微服务事务">微服务事务</h3>
+<p>一个微服务事务例子如下：</p>
+<img src="https://raw.githubusercontent.com/cosmoswei/images/main/202502051916003.png" alt="/" style="zoom:33%;" />
+<p>在虚线内的步骤都有可能出现异常，但是在步骤1，一般不会出现异常，即使出现异常，也可以直接回滚。接下来看看微服务间的分布式事务。</p>
+<p>如果在步骤 2 出现异常：本地回滚，操作失败。</p>
+<p>如果在步骤 2 出现超时：本地回滚，取消步骤2（TCC），操作失败</p>
+<p>如果在步骤 3 出现异常：本地回滚，取消步骤2，操作失败。</p>
+<p>如果在步骤 3 出现超时：继续执行，返回成功，重试任务，处理状态。</p>
+<p>以上机遇各个操作接口都是幂等的情况。</p>
+<h3 id="seata">Seata</h3>
+<p>Seata 是一款开源的分布式事务解决方案，致力于提供高性能和简单易用的分布式事务服务。Seata 将为用户提供了 AT、TCC、SAGA 和 XA 事务模式，为用户打造一站式的分布式解决方案。</p>
+<h2 id="参考文章">参考文章</h2>
+<ol>
+<li>某小公司：MySQL连环问：https://mp.weixin.qq.com/s/AHO_pyZtTH71qoiRsvtRlw</li>
+<li>热点账户问题：https://cloud.tencent.com/developer/article/1452310</li>
+<li>热点账户问题：https://www.cnblogs.com/zyl2016/articles/9928567.html</li>
+<li>深入浅出理解分布式一致性Paxos算法：https://juejin.cn/post/7125769804367003655</li>
+<li>如何保证Redis缓存与MySQL数据库的读写一致性：https://juejin.cn/post/7287026079066800168</li>
+<li>在 Spring 应用中实现 Kafka Consumer 重试消费：https://springdoc.cn/spring-retry-kafka-consumer/</li>
+<li>Quorum NWR算法深度解析：原理与实践：https://www.showapi.com/news/article/67760d4b4ddd79f11a304f0e</li>
+<li>OceanBase的一致性协议为什么选择 paxos而不是raft?：https://www.zhihu.com/question/52337912</li>
+<li>深入理解分布式事务Percolator（1）：https://blog.csdn.net/maxlovezyy/article/details/88572692</li>
+<li>深入理解分布式事务Percolator（2）：https://blog.csdn.net/maxlovezyy/article/details/99702091</li>
+</ol>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/w062025-ddia-zhong-de-yi-xie-gai-nian/">
+              <h3 class="post-title">
+                下一篇：【W08/2025】DDIA 中的一些概念
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">真言一张纸</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>

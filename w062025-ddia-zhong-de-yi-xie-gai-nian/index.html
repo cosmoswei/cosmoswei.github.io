@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    
+<meta charset="utf-8" >
+
+<title>【W08/2025】DDIA 中的一些概念 | cosmoswei go</title>
+<meta name="description" content="真言一张纸">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+<link rel="shortcut icon" href="https://cosmoswei.github.io/favicon.ico?v=1743695501335">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css">
+<link rel="stylesheet" href="https://cosmoswei.github.io/styles/main.css">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+
+
+
+  </head>
+  <body>
+    <div id="app" class="main">
+      <div class="site-header-container">
+  <div class="site-header">
+    <div class="left">
+      <a href="https://cosmoswei.github.io">
+        <img class="avatar" src="https://cosmoswei.github.io/images/avatar.png?v=1743695501335" alt="" width="32px" height="32px">
+      </a>
+      <a href="https://cosmoswei.github.io">
+        <h1 class="site-title">cosmoswei go</h1>
+      </a>
+    </div>
+    <div class="right">
+      <transition name="fade">
+        <i class="icon" :class="{ 'icon-close-outline': menuVisible, 'icon-menu-outline': !menuVisible }" @click="menuVisible = !menuVisible"></i>
+      </transition>
+    </div>
+  </div>
+</div>
+
+<transition name="fade">
+  <div class="menu-container" style="display: none;" v-show="menuVisible">
+    <div class="menu-list">
+      
+        
+          <a href="/" class="menu purple-link">
+            博客
+          </a>
+        
+      
+        
+          <a href="/archives" class="menu purple-link">
+            归档
+          </a>
+        
+      
+        
+          <a href="https://cosmoswei.github.io/about" class="menu purple-link">
+            关于
+          </a>
+        
+      
+    </div>
+  </div>
+</transition>
+
+
+      <div class="content-container">
+        <div class="post-detail">
+          
+          <h2 class="post-title">【W08/2025】DDIA 中的一些概念</h2>
+          <div class="post-info post-detail-info">
+            <span><i class="icon-calendar-outline"></i> 2025-02-17</span>
+            
+          </div>
+          <div class="post-content" v-pre>
+            <p>《Designing Data-Intensive Applications》（DDIA）是一本由 Martin Kleppmann 编写的书，主要关注如何设计和构建现代数据密集型应用。书中详细探讨了构建高性能、高可用和可扩展的分布式系统的核心理念和技术。接下来对书中的一些关键概念进行整理，方便后续查阅。</p>
+<!-- more -->
+<h2 id="数据复制">数据复制</h2>
+<h4 id="写后读一致性p155">写后读一致性#P155</h4>
+<p>读自己的写</p>
+<ul>
+<li>从主节点读取可能会被修改的内容。</li>
+<li>跟踪最近更新的时间，就从从节点读取，监控从节点落后程度。</li>
+<li>记录最近更新的时间戳，如果不够新，则从主节点读取。</li>
+</ul>
+<h4 id="跨设备的写后读一致性p156">跨设备的写后读一致性#P156</h4>
+<h4 id="单调读一致性p157">单调读一致性#P157</h4>
+<p>两次读取在不同节点，导致前一次读到了，后面一次读不到的情况。</p>
+<ul>
+<li>每个用户在固定的副本读取</li>
+</ul>
+<h4 id="前缀一致读p158">前缀一致读#P158</h4>
+<h4 id="事务在性能与可用性方面的代价过高p160">事务在性能与可用性方面的代价过高#P160</h4>
+<h4 id="多主处理写冲突p163">多主处理写冲突#P163</h4>
+<ul>
+<li>分配写ID，最后一个成功。</li>
+<li>合并请求。</li>
+<li>保留冲突信息，交给上层解决。</li>
+</ul>
+<h4 id="自动解决写冲突p166">自动解决写冲突#P166</h4>
+<ul>
+<li>无冲突的数据类型。</li>
+<li>可合并的数据结构。</li>
+<li>操作转化。</li>
+</ul>
+<h4 id="无主节点复制p168">无主节点复制#P168</h4>
+<h4 id="quorum-一致性的局限性p172">Quorum 一致性的局限性#P172</h4>
+<h4 id="量化究竟何为最终的价值p174">量化究竟何为“最终”的价值#P174</h4>
+<h4 id="最后写入者获胜p177">最后写入者获胜#P177</h4>
+<h4 id="并发性时间和相对性p178">并发性，时间和相对性#P178</h4>
+<h4 id="版本矢量p178">版本矢量#P178</h4>
+<h2 id="数据分片">数据分片</h2>
+<p>事务将应用程序的多i个读写操作捆绑在一起成为一个逻辑操作单元。</p>
+<h4 id="aicd-更像是一种市场营销用语p213">AICD 更像是一种市场营销用语#P213</h4>
+<ul>
+<li>
+<p>各家数据库实现的 AICD 不尽相同。</p>
+</li>
+<li>
+<p>围绕隔离性有很多模糊不清的概念。</p>
+</li>
+<li>
+<p>在多线程编程中，原子性意味着现场无法看到当前线程的中间状态，而 ACID 的原子性不关注多线程的并发性，这一点由隔离性保证。</p>
+</li>
+<li>
+<p>ACID 的原子性意味着事务可以终止，数据库可以丢弃那些局部完成的修改（undolog）。</p>
+</li>
+</ul>
+<h4 id="字母-c-只是为了使-acid-缩略词读起来更顺口p215">字母 C 只是为了使 ACID 缩略词读起来更顺口#P215</h4>
+<p>一致性非常重要，但它在不同场景有着不同的具体含义，例如：</p>
+<ul>
+<li>第 5 章我们讨论了副本一致性以及异步复制模型时，引出了最终一致性问题（参见第 5 章“复制滞后问题”）。</li>
+<li>一致性哈希则是某些系统用于动态分区再平衡的方法（参见第 6 章“一致性哈希”）。</li>
+<li>CAP 理论中，一致性一词用来表示线性化（参见第 9 章“可线性化”）。</li>
+<li>而在 ACID 中，一致性主要指数据库处于应用程序所期待的“预期状态”。</li>
+</ul>
+<p>ACID 中的一致性主要是指对数据有特定的预期状态，任何数据的更改都必须满足这种状态约束（或恒等条件）。例如一个账单系统，账户的贷款余额应和借款余额保持平衡。</p>
+<p>原子性，隔离性和持久性是数据库自身的属性，而 ACID 中的一致性更多是应用层的属性。应用程序可能借助数据库提供的原子性和隔离性，以达到一致性，但一致性本身并不源于数据库。因此，字母C其实并不应该属于 ACID。</p>
+<h4 id="读提交的缺陷场景p226">读提交的缺陷场景#P226</h4>
+<ul>
+<li>备份场景</li>
+<li>分析查询场景</li>
+<li>完整性检查场景</li>
+</ul>
+<h4 id="mysqlinnodb-的可重复读不支持检测更新丢失p232">MySQL/Innodb 的可重复读不支持检测更新丢失#P232</h4>
+<h4 id="写倾斜p234">写倾斜#P234</h4>
+<p>PostgreSQL、MySQL、Oracle 都不支持检测写倾斜问题</p>
+<h4 id="快照隔离级别可以避免只读场景的幻读p234">快照隔离级别可以避免只读场景的幻读#P234</h4>
+<h4 id="实例化冲突p237">实例化冲突#P237</h4>
+<h4 id="通用编程言存储过程p241">通用编程言存储过程#P241</h4>
+<p>Redis/Lua</p>
+<h4 id="两阶段加锁p242">两阶段加锁#P242</h4>
+<p>意向锁？</p>
+<h4 id="谓词锁p244">谓词锁#P244</h4>
+<h4 id="索引区间锁p245">索引区间锁#P245</h4>
+<p>next key locking</p>
+<h4 id="可串行化的快照隔离p246">可串行化的快照隔离#P246</h4>
+<p>SSI 新增了相关算法来检测写入之间的串行化冲突，并决定中止那些事务</p>
+<h4 id="基于过期的条件做决定p247">基于过期的条件做决定#P247</h4>
+<h2 id="分布式系统的挑战">分布式系统的挑战</h2>
+<h4 id="部分失效p261">部分失效#P261</h4>
+<h4 id="clos-拓扑结构等分带宽p261">Clos 拓扑结构等分带宽#P261</h4>
+<h4 id="网络分区p265">网络分区#P265</h4>
+<h4 id="同步和异步网络p269">同步和异步网络#P269</h4>
+<h4 id="网络延迟与资源利用率p271">网络延迟与资源利用率#P271</h4>
+<h4 id="墙上时钟与单调时钟p272">墙上时钟与单调时钟#P272</h4>
+<h4 id="时钟置信区间p278">时钟置信区间#P278</h4>
+<h4 id="fencing-令牌p285">Fencing 令牌#P285</h4>
+<p>zk 租期？</p>
+<h4 id="拜占庭故障p286">拜占庭故障#P286</h4>
+<h4 id="安全与活性p290">安全与活性#P290</h4>
+<h2 id="一致性与共识">一致性与共识</h2>
+<h4 id="可线性化p305">可线性化#P305</h4>
+<p>（原子一致性，强一致性）</p>
+<p>严格来说，ZooKeeper和etcd提供可线性化的写操作，默认情况下，由于读操作可以在任何一个副本上执行，因此可能会读到过期值。如果需要，也可以激活线性化读，在etcd中称之为法定票数读取，在ZooKeeper中，则需要读取之前调用sync()，具体请参阅本章后面的“使用全序广播实现线性化存储”。</p>
+<h4 id="线性化与-quorump314">线性化与 Quorum#P314</h4>
+<h4 id="cap理论是否有用p317">CAP理论是否有用？#P317</h4>
+<h4 id="因果排序因果一致性p321">因果排序，因果一致性#P321</h4>
+<h4 id="lamport-时间戳p325">Lamport 时间戳#P325</h4>
+<h4 id="全域关系广播p327">全域关系广播#P327</h4>
+<p>原子广播？ZAB？</p>
+<h4 id="分布式事务与共识p330">分布式事务与共识#P330</h4>
+<h4 id="事务协调者发生故障p336">事务协调者发生故障#P336</h4>
+<h4 id="exactly-once-消息处理p338">Exactly-once 消息处理#P338</h4>
+<h4 id="启发式决策p340">启发式决策#P340</h4>
+<h4 id="事务协调者是应用服务器一部分p341">事务协调者是应用服务器一部分#P341</h4>
+<h4 id="共识算法和全序广播p344">共识算法和全序广播#P344</h4>
+<p>VSR、Raft 和 Zab 都直接采取了全序关系广播，这比重复性的一轮共识只解决一个提议更加高效。而 Paxos 则有对应的优化版本称之为 Multi-Paxos。</p>
+<h4 id="epoch-和-quorump344">Epoch 和 Quorum#P344</h4>
+<p>目前所讨论的所有共识协议在其内部都使用了某种形式的主节点，虽然主节点并不是固定的。相反，他们都采用了一种弱化的保证：协议定义了一个世代编号（epoch number，对应于 Paxos 中的 ballot number，VSP 中 view number，以及 Raft 中的 term number），并保证在每个世代里，主节点是唯一确定的。</p>
+<h4 id="共识算法的局限性p346">共识算法的局限性#P346</h4>
+<p>同步算法的性能</p>
+<p>需要多数节点才能运行</p>
+<p>有一组固定参与投票的节点集</p>
+<p>对网络敏感</p>
+<h4 id="zk-成员与协调服务p346">ZK 成员与协调服务#P346</h4>
+<p>Zookeeper 的实现参考了了 Google 的 Chubby 服务，也进行了一些优化</p>
+<ul>
+<li>线性化的原子操作</li>
+<li>操作全序</li>
+<li>故障检测</li>
+<li>变更通知</li>
+</ul>
+<h4 id="解决主节点不可达的方法p350">解决主节点不可达的方法#P350</h4>
+<p>系统停止服务</p>
+<p>人为介入</p>
+<p>共识算法</p>
+
+          </div>
+        </div>
+
+        
+          <div class="next-post">
+            <a class="purple-link" href="https://cosmoswei.github.io/plamx/">
+              <h3 class="post-title">
+                下一篇：【W01/2025】Palmx：一个次世代的 RPC 框架
+              </h3>
+            </a>
+          </div>
+          
+      </div>
+
+      
+
+      <div class="site-footer">
+  <div class="slogan">真言一张纸</div>
+  <div class="social-container">
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+  </div>
+  <a href="https://prickly-collar-dbd.notion.site/Notion-beaa442c149347998a5bdffd5e87ca30?pvs=4" target="_blank">Go Notion</a> | <a class="rss" href="https://cosmoswei.github.io/atom.xml" target="_blank">RSS</a>
+</div>
+
+
+    </div>
+    <script type="application/javascript">
+
+hljs.initHighlightingOnLoad()
+
+var app = new Vue({
+  el: '#app',
+  data: {
+    menuVisible: false,
+  },
+})
+
+</script>
+
+
+
+
+  </body>
+</html>
